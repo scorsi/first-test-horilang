@@ -11,7 +11,7 @@ enum class TokenType{
     ASSIGN,
     NUMBER,
     STRING,
-    NAME,
+    SYMBOL,
     DQUOTE,
     SQUOTE,
     SEMICOLON,

@@ -23,7 +23,7 @@ public class LexerTest {
         token = stream.next();
         assert token.getType() == TokenType.VAR;
         token = stream.next();
-        assert token.getType() == TokenType.NAME;
+        assert token.getType() == TokenType.SYMBOL;
         assert token.getValue() instanceof String;
         assert token.getValue().equals("a");
         token = stream.next();
@@ -49,7 +49,7 @@ public class LexerTest {
         token = stream.next();
         assert token.getType() == TokenType.LPAREN;
         token = stream.next();
-        assert token.getType() == TokenType.NAME;
+        assert token.getType() == TokenType.SYMBOL;
         assert token.getValue() instanceof String;
         assert token.getValue().equals("a");
         token = stream.next();
@@ -79,7 +79,7 @@ public class LexerTest {
         token = stream.next();
         assert token.getType() == TokenType.LPAREN;
         token = stream.next();
-        assert token.getType() == TokenType.NAME;
+        assert token.getType() == TokenType.SYMBOL;
         assert token.getValue() instanceof String;
         assert token.getValue().equals("a");
         token = stream.next();
@@ -111,7 +111,7 @@ public class LexerTest {
         Token token;
 
         token = stream.next();
-        assert token.getType() == TokenType.NAME;
+        assert token.getType() == TokenType.SYMBOL;
         assert token.getValue() instanceof String;
         assert token.getValue().equals("print");
         token = stream.next();
@@ -119,7 +119,7 @@ public class LexerTest {
         token = stream.next();
         assert token.getType() == TokenType.DQUOTE;
         token = stream.next();
-        assert token.getType() == TokenType.NAME;
+        assert token.getType() == TokenType.SYMBOL;
         assert token.getValue() instanceof String;
         assert token.getValue().equals("test");
         token = stream.next();

@@ -8,7 +8,7 @@ enum class DefaultRule constructor(val tokenType: TokenType, val regex: Regex) {
     IF(TokenType.IF, """if""".toRegex()),
     ELSE(TokenType.ELSE, """else""".toRegex()),
     STRING(TokenType.STRING, """\".*\"""".toRegex()),
-    NAME(TokenType.NAME, """[a-zA-Z_][a-zA-Z0-9_]*""".toRegex()), // NAME RULE HAS NOT PRIORITY OVER OTHER KEYWORDS RULE
+    SYMBOL(TokenType.SYMBOL, """[a-zA-Z_][a-zA-Z0-9_]*""".toRegex()), // NAME RULE HAS NOT PRIORITY OVER OTHER KEYWORDS RULE
     LPAREN(TokenType.LPAREN, """\(""".toRegex()),
     RPAREN(TokenType.RPAREN, """\)""".toRegex()),
     LBRACE(TokenType.LBRACE, """\{""".toRegex()),
