@@ -16,8 +16,8 @@ enum class DefaultRule constructor(val tokenType: TokenType, val regex: Regex) {
     EQUAL(TokenType.EQUAL, """==""".toRegex()), // EQUAL RULE HAS PRIORITY OVER ASSIGN RULE
     ASSIGN(TokenType.ASSIGN, """=""".toRegex()),
     NUMBER(TokenType.NUMBER, """[0-9]+""".toRegex()),
-    DQUOTE(TokenType.DQUOTE, """\"""".toRegex()),
-    SQUOTE(TokenType.SQUOTE, """\'""".toRegex()),
+    //DQUOTE(TokenType.DQUOTE, """\"""".toRegex()),
+    //SQUOTE(TokenType.SQUOTE, """\'""".toRegex()),
     SEMICOLON(TokenType.SEMICOLON, """;""".toRegex()),
     MINUS(TokenType.MINUS, """-""".toRegex()),
     PLUS(TokenType.PLUS, """\+""".toRegex()),
