@@ -17,17 +17,23 @@ class LexerStream constructor(val rules: List<Rule>, private var input: String) 
                 else -> pos
             }
 
-    private fun advance(pos: Int): Int =
+    private fun advance(pos: Int, matched: Boolean = false): Int =
             when {
                 pos >= input.length -> pos - 1
                 else -> when (pos) {
                     startPos -> when {
-                        rules.any { input[pos].toString().matchRule(it) } -> advance(pos + 1)
-                        else -> pos - 1
+                        rules.any { input[pos].toString().matchRule(it) } -> advance(pos + 1, true)
+                        else -> when (matched) {
+                            true -> pos - 1
+                            false -> advance(pos + 1)
+                        }
                     }
                     else -> when {
-                        rules.any { input.substring(startPos, pos).matchRule(it) } -> advance(pos + 1)
-                        else -> pos - 1
+                        rules.any { input.substring(startPos, pos).matchRule(it) } -> advance(pos + 1, true)
+                        else -> when (matched) {
+                            true -> pos - 1
+                            false -> advance(pos + 1)
+                        }
                     }
                 }
             }
