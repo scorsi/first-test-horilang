@@ -117,13 +117,9 @@ public class LexerTest {
         token = stream.next();
         assert token.getType() == TokenType.LPAREN;
         token = stream.next();
-        assert token.getType() == TokenType.DQUOTE;
-        token = stream.next();
-        assert token.getType() == TokenType.SYMBOL;
+        assert token.getType() == TokenType.STRING;
         assert token.getValue() instanceof String;
-        assert token.getValue().equals("test");
-        token = stream.next();
-        assert token.getType() == TokenType.DQUOTE;
+        assert token.getValue().equals("\"test\"");
         token = stream.next();
         assert token.getType() == TokenType.RPAREN;
 
