@@ -26,8 +26,8 @@ enum class TokenType{
     SYMBOL,
 
     // QUOTES
-    DQUOTE,
-    SQUOTE,
+    //DQUOTE,
+    //SQUOTE,
 
     // END OF STATEMENT
     SEMICOLON,
