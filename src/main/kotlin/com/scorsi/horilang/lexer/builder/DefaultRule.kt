@@ -18,7 +18,12 @@ enum class DefaultRule constructor(val tokenType: TokenType, val regex: Regex) {
     NUMBER(TokenType.NUMBER, """[0-9]+""".toRegex()),
     DQUOTE(TokenType.DQUOTE, """\"""".toRegex()),
     SQUOTE(TokenType.SQUOTE, """\'""".toRegex()),
-    SEMICOLON(TokenType.SEMICOLON, """;""".toRegex());
+    SEMICOLON(TokenType.SEMICOLON, """;""".toRegex()),
+    MINUS(TokenType.MINUS, """-""".toRegex()),
+    PLUS(TokenType.PLUS, """\+""".toRegex()),
+    MULTIPLICATION(TokenType.MULTIPLICATION, """\*""".toRegex()),
+    DIVISION(TokenType.DIVISION, """/""".toRegex()),
+    MODULO(TokenType.MODULO, """%""".toRegex()),;
 
     fun build() = Rule(regex, tokenType)
 }
