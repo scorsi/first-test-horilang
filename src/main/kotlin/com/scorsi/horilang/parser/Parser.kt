@@ -9,7 +9,7 @@ class Parser constructor(val lexer: LexerStream) {
 
     private var current: Token? = null
 
-    private fun expectNextToken(expectedTypes: List<TokenType>) : Boolean {
+    private fun expectNextToken(expectedTypes: List<TokenType>): Boolean {
         current = lexer.next()
         return when (current) {
             null -> false
@@ -17,65 +17,62 @@ class Parser constructor(val lexer: LexerStream) {
         }
     }
 
-    private fun getAssignment() : AssignmentNode? =
-            when (current) {
-                null -> throw Error("Assignment syntax error")
-                else -> {
-                    val symbol = current as Token
-                    expectNextToken(listOf(TokenType.ASSIGN)).let {
+    private fun getType(): Token =
+            expectNextToken(listOf(TokenType.TYPE)).let {
+                when (it) {
+                    false -> throw TokenExpecting(listOf(TokenType.TYPE), current)
+                    true -> current!!
+                }
+            }
+
+    private fun getSymbol(): Token =
+            expectNextToken(listOf(TokenType.SYMBOL)).let {
+                when (it) {
+                    false -> throw TokenExpecting(listOf(TokenType.SYMBOL), current)
+                    true -> current!!
+                }
+            }
+
+    private fun getValue(): Token =
+            expectNextToken(listOf(TokenType.NUMBER, TokenType.STRING, TokenType.SYMBOL)).let {
+                when (it) {
+                    false -> throw TokenExpecting(listOf(TokenType.NUMBER, TokenType.STRING, TokenType.SYMBOL), current)
+                    true -> current!!
+                }
+            }
+
+    private fun getDeclarationType(): Token =
+            expectNextToken(listOf(TokenType.DDOT)).let {
+                when (it) {
+                    false -> throw TokenExpecting(listOf(TokenType.DDOT), current)
+                    true -> getType()
+                }
+            }
+
+    private fun getDeclaration(): DeclarationNode? =
+            getSymbol().let { symbol ->
+                getDeclarationType().let { type ->
+                    expectNextToken(listOf(TokenType.ASSIGN)).let { // CHECK IF THE DECLARATION ALSO ASSIGN
                         when (it) {
-                            false -> throw Error("Assignment syntax error")
-                            true -> expectNextToken(listOf(TokenType.NUMBER, TokenType.STRING, TokenType.SYMBOL)).let {
-                                when (it) {
-                                    false -> throw Error("Assignment syntax error")
-                                    true -> AssignmentNode(symbol, current as Token)
-                                }
-                            }
+                            false -> DeclarationNode(symbol, type)
+                            true -> DeclarationNode(symbol, type, getValue())
                         }
                     }
                 }
             }
 
-    private fun getDeclaration() : DeclarationNode? =
-            when (current) {
-                null -> null
-                else -> {
-                    expectNextToken(listOf(TokenType.SYMBOL)).let {
-                        when (it) {
-                            false -> throw Error("Declaration syntax error")
-                            true -> {
-                                val symbol = current as Token
-                                expectNextToken(listOf(TokenType.DDOT)).let {
-                                    when (it) {
-                                        false -> throw Error("Declaration syntax error")
-                                        true -> expectNextToken(listOf(TokenType.TYPE)).let {
-                                            when (it) {
-                                                false -> throw Error("Declaration syntax error")
-                                                true -> {
-                                                    val type = current as Token
-                                                    expectNextToken(listOf(TokenType.ASSIGN)).let {
-                                                        when (it) {
-                                                            false -> DeclarationNode(symbol, type)
-                                                            true -> expectNextToken(listOf(TokenType.NUMBER, TokenType.STRING, TokenType.SYMBOL)).let {
-                                                                when (it) {
-                                                                    false -> throw Error("Declaration syntax error")
-                                                                    true -> DeclarationNode(symbol, type, current)
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+    private fun getAssignmentValue(): Token =
+            expectNextToken(listOf(TokenType.ASSIGN)).let {
+                when (it) {
+                    false -> throw TokenExpecting(listOf(TokenType.ASSIGN), current)
+                    true -> getValue()
                 }
             }
 
-    private fun getStatement() : StatementNode? =
+    private fun getAssignment(): AssignmentNode? =
+            current.let { symbol -> getAssignmentValue().let { value -> AssignmentNode(symbol as Token, value) } }
+
+    private fun getStatement(): StatementNode? =
             when (current) {
                 null -> null
                 else -> when ((current as Token).type) {
@@ -99,7 +96,7 @@ class Parser constructor(val lexer: LexerStream) {
                 }
             }
 
-    private fun getStatements(list: MutableList<StatementNode>) : MutableList<StatementNode> =
+    private fun getStatements(list: MutableList<StatementNode>): MutableList<StatementNode> =
             when (current) {
                 null -> list
                 else -> getStatement().let {
@@ -114,12 +111,12 @@ class Parser constructor(val lexer: LexerStream) {
                 }
             }
 
-    private fun getBlock() : BlockNode? =
+    private fun getBlock(): BlockNode? =
             when (current) {
                 null -> null
                 else -> BlockNode(getStatements(mutableListOf()))
             }
 
-    fun parse() : Node? = lexer.next().let { current = it; getBlock() }
+    fun parse(): Node? = lexer.next().let { current = it; getBlock() }
 
 }
