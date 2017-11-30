@@ -53,4 +53,8 @@ class LexerStream constructor(val rules: List<Rule>, private var input: String) 
                 }
             }
 
+    fun reset() {
+        startPos = 0
+    }
+
 }
