@@ -15,12 +15,12 @@ class ParserRunner implements Runnable {
     void run() {
         def lexer = new LexerBuilder().defaultBuild()
         def stream = lexer.lex(this.input)
-        def token = stream.next()
+        /*def token = stream.next()
         while (token) {
             println(token)
             token = stream.next()
         }
-        stream.reset()
+        stream.reset()*/
         def node = new Parser(stream).parse()
         println(node)
     }

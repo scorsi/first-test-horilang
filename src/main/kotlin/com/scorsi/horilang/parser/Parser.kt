@@ -41,6 +41,46 @@ class Parser constructor(val lexer: LexerStream) {
                 }
             }
 
+    private fun getComparator(): Token =
+            expectNextToken(listOf(TokenType.EQUAL, TokenType.NOTEQUAL, TokenType.GREATER, TokenType.GREATEREQUAL, TokenType.LOWER, TokenType.LOWEREQUAL)).let {
+                when (it) {
+                    false -> throw TokenExpecting(listOf(TokenType.EQUAL, TokenType.NOTEQUAL, TokenType.GREATER, TokenType.GREATEREQUAL, TokenType.LOWER, TokenType.LOWEREQUAL), current)
+                    true -> current!!
+                }
+            }
+
+    private fun getLParen(): Token =
+            expectNextToken(listOf(TokenType.LPAREN)).let {
+                when (it) {
+                    false -> throw TokenExpecting(listOf(TokenType.LPAREN), current)
+                    true -> current!!
+                }
+            }
+
+    private fun getRParen(): Token =
+            expectNextToken(listOf(TokenType.RPAREN)).let {
+                when (it) {
+                    false -> throw TokenExpecting(listOf(TokenType.RPAREN), current)
+                    true -> current!!
+                }
+            }
+
+    private fun getLBrace(): Token =
+            expectNextToken(listOf(TokenType.LBRACE)).let {
+                when (it) {
+                    false -> throw TokenExpecting(listOf(TokenType.LBRACE), current)
+                    true -> current!!
+                }
+            }
+
+    private fun getRBrace(): Token =
+            expectNextToken(listOf(TokenType.RBRACE)).let {
+                when (it) {
+                    false -> throw TokenExpecting(listOf(TokenType.RBRACE), current)
+                    true -> current!!
+                }
+            }
+
     private fun getDeclarationType(): Token =
             expectNextToken(listOf(TokenType.DDOT)).let {
                 when (it) {
@@ -49,10 +89,11 @@ class Parser constructor(val lexer: LexerStream) {
                 }
             }
 
-    private fun getDeclaration(): DeclarationNode? =
+    private fun getDeclarationNode(): DeclarationNode? =
             getSymbol().let { symbol ->
                 getDeclarationType().let { type ->
-                    expectNextToken(listOf(TokenType.ASSIGN)).let { // CHECK IF THE DECLARATION ALSO ASSIGN
+                    expectNextToken(listOf(TokenType.ASSIGN)).let {
+                        // CHECK IF THE DECLARATION ALSO ASSIGN
                         when (it) {
                             false -> DeclarationNode(symbol, type)
                             true -> DeclarationNode(symbol, type, getValue())
@@ -69,15 +110,45 @@ class Parser constructor(val lexer: LexerStream) {
                 }
             }
 
-    private fun getAssignment(): AssignmentNode? =
+    private fun getAssignmentNode(): AssignmentNode? =
             current.let { symbol -> getAssignmentValue().let { value -> AssignmentNode(symbol as Token, value) } }
 
-    private fun getStatement(): StatementNode? =
+    private fun getConditionalNodeCondition(): ConditionNode =
+            getLParen().let { getValue().let { left -> getComparator().let { comparator -> getValue().let { right -> getRParen().let { ConditionNode(left, right, comparator) } } } } }
+
+    private fun getBody(): BlockNode =
+            getLBrace().let {
+                current = lexer.next()
+                getBlockNode().let { block ->
+                    when (block) {
+                        null -> throw Error("Expected a body")
+                        else -> when (current!!.type) {
+                            TokenType.RBRACE -> block
+                            else -> throw TokenExpecting(listOf(TokenType.RBRACE), current)
+                        }
+                    }
+                }
+            }
+
+    private fun getConditionalNode(): ConditionalNode? =
+            getConditionalNodeCondition().let { condition ->
+                getBody().let { thenBlock ->
+                    expectNextToken(listOf(TokenType.ELSE)).let {
+                        when (it) {
+                            false -> ConditionalNode(condition, thenBlock)
+                            true -> ConditionalNode(condition, thenBlock, getBody())
+                        }
+                    }
+                }
+            }
+
+    private fun getStatementNode(): StatementNode? =
             when (current) {
                 null -> null
                 else -> when ((current as Token).type) {
-                    TokenType.VAR -> getDeclaration()
-                    TokenType.SYMBOL -> getAssignment()
+                    TokenType.VAR -> getDeclarationNode()
+                    TokenType.SYMBOL -> getAssignmentNode()
+                    TokenType.IF -> getConditionalNode()
                     else -> null
                 }.let { ret ->
                     when (ret) {
@@ -96,27 +167,27 @@ class Parser constructor(val lexer: LexerStream) {
                 }
             }
 
-    private fun getStatements(list: MutableList<StatementNode>): MutableList<StatementNode> =
+    private fun getStatementNodes(list: MutableList<StatementNode>): MutableList<StatementNode> =
             when (current) {
                 null -> list
-                else -> getStatement().let {
+                else -> getStatementNode().let {
                     when (it) {
                         null -> list
                         else -> {
                             list.add(it)
                             current = lexer.next()
-                            getStatements(list)
+                            getStatementNodes(list)
                         }
                     }
                 }
             }
 
-    private fun getBlock(): BlockNode? =
+    private fun getBlockNode(): BlockNode? =
             when (current) {
                 null -> null
-                else -> BlockNode(getStatements(mutableListOf()))
+                else -> BlockNode(getStatementNodes(mutableListOf()))
             }
 
-    fun parse(): Node? = lexer.next().let { current = it; getBlock() }
+    fun parse(): Node? = lexer.next().let { current = it; getBlockNode() }
 
 }
