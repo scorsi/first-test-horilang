@@ -15,6 +15,12 @@ enum class DefaultRule constructor(val tokenType: TokenType, val regex: Regex) {
     LBRACE(TokenType.LBRACE, """\{""".toRegex()),
     RBRACE(TokenType.RBRACE, """\}""".toRegex()),
     EQUAL(TokenType.EQUAL, """==""".toRegex()), // EQUAL RULE HAS PRIORITY OVER ASSIGN RULE
+    NOTEQUAL(TokenType.NOTEQUAL, """!=""".toRegex()),
+    GREATER(TokenType.GREATER, """>""".toRegex()),
+    GREATEREQUAL(TokenType.GREATEREQUAL, """>=""".toRegex()),
+    LOWER(TokenType.LOWER, """<""".toRegex()),
+    LOWEREQUAL(TokenType.LOWEREQUAL, """<=""".toRegex()),
+
     ASSIGN(TokenType.ASSIGN, """=""".toRegex()),
     NUMBER(TokenType.NUMBER, """[0-9]+""".toRegex()),
     //DQUOTE(TokenType.DQUOTE, """\"""".toRegex()),

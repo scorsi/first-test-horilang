@@ -37,6 +37,11 @@ enum class TokenType{
 
     // COMPARISON OPERATORS
     EQUAL,
+    NOTEQUAL,
+    GREATER,
+    LOWER,
+    GREATEREQUAL,
+    LOWEREQUAL,
 
     // CALCULATION OPERATORS
     MINUS,
