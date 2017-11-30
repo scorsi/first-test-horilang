@@ -15,116 +15,65 @@ public class LexerTest {
         lexer = new LexerBuilder().defaultBuild();
     }
 
+    private void expectedToken(Token expectedToken, Token givenToken, Boolean testValue) {
+        assert expectedToken.getType().equals(givenToken.getType());
+        assert !testValue || expectedToken.getValue().equals(givenToken.getValue());
+    }
+
     @Test
     public void testBasicVarDeclarationWithAssignment() {
         LexerStream stream = lexer.lex("var a = 1;");
-        Token token;
 
-        token = stream.next();
-        assert token.getType() == TokenType.VAR;
-        token = stream.next();
-        assert token.getType() == TokenType.SYMBOL;
-        assert token.getValue() instanceof String;
-        assert token.getValue().equals("a");
-        token = stream.next();
-        assert token.getType() == TokenType.ASSIGN;
-        token = stream.next();
-        assert token.getType() == TokenType.NUMBER;
-        assert token.getValue() instanceof String;
-        assert token.getValue().equals("1");
-        token = stream.next();
-        assert token.getType() == TokenType.SEMICOLON;
-
-        token = stream.next();
-        assert token == null;
+        expectedToken(new Token(TokenType.VAR, null), stream.next(), false);
+        expectedToken(new Token(TokenType.SYMBOL, "a"), stream.next(), true);
+        expectedToken(new Token(TokenType.ASSIGN, null), stream.next(), false);
+        expectedToken(new Token(TokenType.NUMBER, "1"), stream.next(), true);
+        expectedToken(new Token(TokenType.SEMICOLON, null), stream.next(), false);
+        assert stream.next() == null;
     }
 
     @Test
     public void testBasicIfWithoutBody() {
         LexerStream stream = lexer.lex("if (a == 1) { }");
-        Token token;
 
-        token = stream.next();
-        assert token.getType() == TokenType.IF;
-        token = stream.next();
-        assert token.getType() == TokenType.LPAREN;
-        token = stream.next();
-        assert token.getType() == TokenType.SYMBOL;
-        assert token.getValue() instanceof String;
-        assert token.getValue().equals("a");
-        token = stream.next();
-        assert token.getType() == TokenType.EQUAL;
-        token = stream.next();
-        assert token.getType() == TokenType.NUMBER;
-        assert token.getValue() instanceof String;
-        assert token.getValue().equals("1");
-        token = stream.next();
-        assert token.getType() == TokenType.RPAREN;
-        token = stream.next();
-        assert token.getType() == TokenType.LBRACE;
-        token = stream.next();
-        assert token.getType() == TokenType.RBRACE;
-
-        token = stream.next();
-        assert token == null;
+        expectedToken(new Token(TokenType.IF, null), stream.next(), false);
+        expectedToken(new Token(TokenType.LPAREN, null), stream.next(), false);
+        expectedToken(new Token(TokenType.SYMBOL, "a"), stream.next(), true);
+        expectedToken(new Token(TokenType.EQUAL, null), stream.next(), false);
+        expectedToken(new Token(TokenType.NUMBER, "1"), stream.next(), true);
+        expectedToken(new Token(TokenType.RPAREN, null), stream.next(), false);
+        expectedToken(new Token(TokenType.LBRACE, null), stream.next(), false);
+        expectedToken(new Token(TokenType.RBRACE, null), stream.next(), false);
+        assert stream.next() == null;
     }
 
     @Test
     public void testIfElseWithoutBody() {
         LexerStream stream = lexer.lex("if (a == 3) { } else { }");
-        Token token;
 
-        token = stream.next();
-        assert token.getType() == TokenType.IF;
-        token = stream.next();
-        assert token.getType() == TokenType.LPAREN;
-        token = stream.next();
-        assert token.getType() == TokenType.SYMBOL;
-        assert token.getValue() instanceof String;
-        assert token.getValue().equals("a");
-        token = stream.next();
-        assert token.getType() == TokenType.EQUAL;
-        token = stream.next();
-        assert token.getType() == TokenType.NUMBER;
-        assert token.getValue() instanceof String;
-        assert token.getValue().equals("3");
-        token = stream.next();
-        assert token.getType() == TokenType.RPAREN;
-        token = stream.next();
-        assert token.getType() == TokenType.LBRACE;
-        token = stream.next();
-        assert token.getType() == TokenType.RBRACE;
-        token = stream.next();
-        assert token.getType() == TokenType.ELSE;
-        token = stream.next();
-        assert token.getType() == TokenType.LBRACE;
-        token = stream.next();
-        assert token.getType() == TokenType.RBRACE;
-
-        token = stream.next();
-        assert token == null;
+        expectedToken(new Token(TokenType.IF, null), stream.next(), false);
+        expectedToken(new Token(TokenType.LPAREN, null), stream.next(), false);
+        expectedToken(new Token(TokenType.SYMBOL, "a"), stream.next(), true);
+        expectedToken(new Token(TokenType.EQUAL, null), stream.next(), false);
+        expectedToken(new Token(TokenType.NUMBER, "3"), stream.next(), true);
+        expectedToken(new Token(TokenType.RPAREN, null), stream.next(), false);
+        expectedToken(new Token(TokenType.LBRACE, null), stream.next(), false);
+        expectedToken(new Token(TokenType.RBRACE, null), stream.next(), false);
+        expectedToken(new Token(TokenType.ELSE, null), stream.next(), false);
+        expectedToken(new Token(TokenType.LBRACE, null), stream.next(), false);
+        expectedToken(new Token(TokenType.RBRACE, null), stream.next(), false);
+        assert stream.next() == null;
     }
 
     @Test
     public void testBasicFunctionCall() {
         LexerStream stream = lexer.lex("print(\"test\")");
-        Token token;
 
-        token = stream.next();
-        assert token.getType() == TokenType.SYMBOL;
-        assert token.getValue() instanceof String;
-        assert token.getValue().equals("print");
-        token = stream.next();
-        assert token.getType() == TokenType.LPAREN;
-        token = stream.next();
-        assert token.getType() == TokenType.STRING;
-        assert token.getValue() instanceof String;
-        assert token.getValue().equals("\"test\"");
-        token = stream.next();
-        assert token.getType() == TokenType.RPAREN;
-
-        token = stream.next();
-        assert token == null;
+        expectedToken(new Token(TokenType.SYMBOL, "print"), stream.next(), true);
+        expectedToken(new Token(TokenType.LPAREN, null), stream.next(), false);
+        expectedToken(new Token(TokenType.STRING, "\"test\""), stream.next(), true);
+        expectedToken(new Token(TokenType.RPAREN, null), stream.next(), false);
+        assert stream.next() == null;
     }
 
 }
