@@ -23,14 +23,17 @@ enum class TokenType{
     NUMBER,
     STRING,
 
+    // SYMBOLS
     SYMBOL,
+    TYPE,
 
     // QUOTES
     //DQUOTE,
     //SQUOTE,
 
-    // END OF STATEMENT
+    // SPECIALS
     SEMICOLON,
+    DDOT,
 
     // COMPARISON OPERATORS
     EQUAL,
