@@ -2,6 +2,7 @@ package com.scorsi.horilang
 
 import com.scorsi.horilang.lexer.Token
 import com.scorsi.horilang.lexer.builder.LexerBuilder
+import com.scorsi.horilang.parser.Parser
 
 class Main {
 
@@ -17,6 +18,11 @@ class Main {
                 println(token)
                 token = stream.next()
             }
+
+            stream.reset()
+            def parser = new Parser(stream)
+            def node = parser.parse()
+            println(node)
         }
     }
 
