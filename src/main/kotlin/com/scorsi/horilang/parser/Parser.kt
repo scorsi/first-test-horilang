@@ -101,7 +101,7 @@ class Parser constructor(val lexer: LexerStream) {
                                 current = it
                                 getStatementNode().let {
                                     when (it) {
-                                        null -> throw Error(current.toString())
+                                        null -> throw Error("Expected right value")
                                         // CHECK HERE TO ALLOW DIFFERENT RIGHTVALUE FOR DECLARATIONNODE
                                         else -> DeclarationNode(SymbolNode(symbol), type, it)
                                     }
