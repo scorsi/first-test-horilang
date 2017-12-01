@@ -102,8 +102,8 @@ class Parser constructor(val lexer: LexerStream) {
                                 getStatementNode().let {
                                     when (it) {
                                         null -> throw Error(current.toString())
-                                        is ValueNode -> DeclarationNode(SymbolNode(symbol), type, it)
-                                        else -> throw Error()
+                                        // CHECK HERE TO ALLOW DIFFERENT RIGHTVALUE FOR DECLARATIONNODE
+                                        else -> DeclarationNode(SymbolNode(symbol), type, it)
                                     }
                                 }
                             }
