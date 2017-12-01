@@ -9,14 +9,15 @@ class Parser constructor(val lexer: LexerStream) {
 
     private var current: Token? = null
 
-    private fun expectNextToken(expectedTypes: List<TokenType>): Boolean {
-        current = lexer.next()
-        return when (current) {
-            null -> false
-            else -> expectedTypes.contains((current as Token).type)
-        }
-    }
-
+    private fun expectNextToken(expectedTypes: List<TokenType>): Boolean =
+            lexer.next().let {
+                current = it
+                when (current) {
+                    null-> false
+                    else -> expectedTypes.contains((current as Token).type)
+                }
+            }
+    
     private fun getType(): Token =
             expectNextToken(listOf(TokenType.TYPE)).let {
                 when (it) {
@@ -116,27 +117,24 @@ class Parser constructor(val lexer: LexerStream) {
     private fun getConditionalNodeCondition(): ConditionNode =
             getLParen().let { getValue().let { left -> getComparator().let { comparator -> getValue().let { right -> getRParen().let { ConditionNode(left, right, comparator) } } } } }
 
-    private fun getBody(): BlockNode =
+    private fun getBody(): BlockNode? =
             getLBrace().let {
                 current = lexer.next()
                 getBlockNode().let { block ->
-                    when (block) {
-                        null -> throw Error("Expected a body")
-                        else -> when (current!!.type) {
-                            TokenType.RBRACE -> block
-                            else -> throw TokenExpecting(listOf(TokenType.RBRACE), current)
-                        }
+                    when (current!!.type) {
+                        TokenType.RBRACE -> block
+                        else -> throw TokenExpecting(listOf(TokenType.RBRACE), current)
                     }
                 }
             }
 
-    private fun getConditionalNode(): ConditionalNode? =
+    private fun getConditionalNode(): ConditionalBranchNode? =
             getConditionalNodeCondition().let { condition ->
                 getBody().let { thenBlock ->
                     expectNextToken(listOf(TokenType.ELSE)).let {
                         when (it) {
-                            false -> ConditionalNode(condition, thenBlock)
-                            true -> ConditionalNode(condition, thenBlock, getBody())
+                            false -> ConditionalBranchNode(condition, thenBlock)
+                            true -> ConditionalBranchNode(condition, thenBlock, getBody())
                         }
                     }
                 }
@@ -147,7 +145,7 @@ class Parser constructor(val lexer: LexerStream) {
                 null -> null
                 else -> when ((current as Token).type) {
                     TokenType.VAR -> getDeclarationNode()
-                    TokenType.SYMBOL -> getAssignmentNode()
+                    TokenType.SYMBOL -> getAssignmentNode() // FAIRE LE CHECK DES FONCTIONS ICI
                     TokenType.IF -> getConditionalNode()
                     else -> null
                 }.let { ret ->
@@ -167,7 +165,7 @@ class Parser constructor(val lexer: LexerStream) {
                 }
             }
 
-    private fun getStatementNodes(list: MutableList<StatementNode>): MutableList<StatementNode> =
+    private fun getAllStatementNodes(list: MutableList<StatementNode>): MutableList<StatementNode> =
             when (current) {
                 null -> list
                 else -> getStatementNode().let {
@@ -176,7 +174,7 @@ class Parser constructor(val lexer: LexerStream) {
                         else -> {
                             list.add(it)
                             current = lexer.next()
-                            getStatementNodes(list)
+                            getAllStatementNodes(list)
                         }
                     }
                 }
@@ -185,7 +183,12 @@ class Parser constructor(val lexer: LexerStream) {
     private fun getBlockNode(): BlockNode? =
             when (current) {
                 null -> null
-                else -> BlockNode(getStatementNodes(mutableListOf()))
+                else -> getAllStatementNodes(mutableListOf()).let {
+                    when {
+                        it.isEmpty() -> null
+                        else -> BlockNode(it)
+                    }
+                }
             }
 
     fun parse(): Node? = lexer.next().let { current = it; getBlockNode() }

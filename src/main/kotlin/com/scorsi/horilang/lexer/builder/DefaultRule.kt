@@ -9,7 +9,7 @@ enum class DefaultRule constructor(val tokenType: TokenType, val regex: Regex) {
     ELSE(TokenType.ELSE, """else""".toRegex()),
     STRING(TokenType.STRING, """\".*\"""".toRegex()),
     TYPE(TokenType.TYPE, """[A-Z][a-zA-Z_]*""".toRegex()),
-    SYMBOL(TokenType.SYMBOL, """[a-zA-Z_][a-zA-Z0-9_]*""".toRegex()), // NAME RULE HAS NOT PRIORITY OVER OTHER KEYWORDS RULE
+    SYMBOL(TokenType.SYMBOL, """_?[a-z][a-zA-Z0-9]*""".toRegex()), // NAME RULE HAS NOT PRIORITY OVER OTHER KEYWORDS RULE
     LPAREN(TokenType.LPAREN, """\(""".toRegex()),
     RPAREN(TokenType.RPAREN, """\)""".toRegex()),
     LBRACE(TokenType.LBRACE, """\{""".toRegex()),
