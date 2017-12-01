@@ -13,11 +13,11 @@ class Parser constructor(val lexer: LexerStream) {
             lexer.next().let {
                 current = it
                 when (current) {
-                    null-> false
+                    null -> false
                     else -> expectedTypes.contains((current as Token).type)
                 }
             }
-    
+
     private fun getType(): Token =
             expectNextToken(listOf(TokenType.TYPE)).let {
                 when (it) {
@@ -96,23 +96,32 @@ class Parser constructor(val lexer: LexerStream) {
                     expectNextToken(listOf(TokenType.ASSIGN)).let {
                         // CHECK IF THE DECLARATION ALSO ASSIGN
                         when (it) {
-                            false -> DeclarationNode(symbol, type)
-                            true -> DeclarationNode(symbol, type, getValue())
+                            false -> DeclarationNode(SymbolNode(symbol), type)
+                            true -> lexer.next().let {
+                                current = it
+                                getStatementNode().let {
+                                    when (it) {
+                                        null -> throw Error(current.toString())
+                                        is ValueNode -> DeclarationNode(SymbolNode(symbol), type, it)
+                                        else -> throw Error()
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
 
-    private fun getAssignmentValue(): Token =
-            expectNextToken(listOf(TokenType.ASSIGN)).let {
-                when (it) {
-                    false -> throw TokenExpecting(listOf(TokenType.ASSIGN), current)
-                    true -> getValue()
+    private fun getAssignmentNode(symbol: Token): AssignmentNode? =
+            lexer.next().let {
+                current = it
+                getStatementNode().let { value ->
+                    when (value) {
+                        null -> throw Error()
+                        else -> AssignmentNode(symbol, value)
+                    }
                 }
             }
-
-    private fun getAssignmentNode(): AssignmentNode? =
-            current.let { symbol -> getAssignmentValue().let { value -> AssignmentNode(symbol as Token, value) } }
 
     private fun getConditionalNodeCondition(): ConditionNode =
             getLParen().let { getValue().let { left -> getComparator().let { comparator -> getValue().let { right -> getRParen().let { ConditionNode(left, right, comparator) } } } } }
@@ -140,14 +149,36 @@ class Parser constructor(val lexer: LexerStream) {
                 }
             }
 
+    private fun getValueNode(): ValueNode? =
+            (current as Token).let {
+                when (it.type) {
+                    TokenType.NUMBER -> ValueNode(it)
+                    TokenType.STRING -> ValueNode(it)
+                    else -> null
+                }
+            }
+
+    private fun getStatementNodeStartWithSymbol(): StatementNode? =
+            current.let { symbol ->
+                lexer.next().let {
+                    when (it) {
+                        null -> SymbolNode(symbol as Token)
+                        else -> when (it.type) {
+                            TokenType.ASSIGN -> getAssignmentNode(symbol as Token)
+                            else -> SymbolNode(symbol as Token)
+                        }
+                    }
+                }
+            }
+
     private fun getStatementNode(): StatementNode? =
             when (current) {
                 null -> null
                 else -> when ((current as Token).type) {
                     TokenType.VAR -> getDeclarationNode()
-                    TokenType.SYMBOL -> getAssignmentNode() // FAIRE LE CHECK DES FONCTIONS ICI
+                    TokenType.SYMBOL -> getStatementNodeStartWithSymbol()
                     TokenType.IF -> getConditionalNode()
-                    else -> null
+                    else -> getValueNode()
                 }.let { ret ->
                     when (ret) {
                         null -> null

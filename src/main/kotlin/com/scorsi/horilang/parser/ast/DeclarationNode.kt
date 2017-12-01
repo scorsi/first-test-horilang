@@ -3,6 +3,6 @@ package com.scorsi.horilang.parser.ast
 import com.scorsi.horilang.lexer.Token
 
 /**
- * VAR SYMBOL DDOT TYPE (ASSIGN (INTEGER | STRING | SYMBOL))?
+ * VAR SYMBOL DDOT TYPE (ASSIGN statement)?
  */
-data class DeclarationNode constructor(val symbol: Token, val type: Token, val value: Token? = null) : StatementNode()
+data class DeclarationNode constructor(val symbol: SymbolNode, val type: Token, val rightValue: StatementNode? = null) : StatementNode()
