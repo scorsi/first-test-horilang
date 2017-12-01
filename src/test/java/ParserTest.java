@@ -1,5 +1,4 @@
 import com.scorsi.horilang.lexer.Lexer;
-import com.scorsi.horilang.lexer.LexerStream;
 import com.scorsi.horilang.lexer.TokenType;
 import com.scorsi.horilang.lexer.builder.LexerBuilder;
 import com.scorsi.horilang.parser.Parser;
@@ -63,25 +62,38 @@ public class ParserTest {
     }
 
     @Test
+    public void testEmptyIf() {
+        Parser parser = new Parser(lexer.lex("if (a == 0) {}"));
+        Node node = parser.parse();
+        assert node != null;
+        assert node instanceof BlockNode;
+        assert ((BlockNode) node).getStatements().size() == 1;
+        assert ((BlockNode) node).getStatements().get(0) instanceof ConditionalBranchNode;
+        ConditionalBranchNode conditionalBranchNode = (ConditionalBranchNode)((BlockNode) node).getStatements().get(0);
+        assert conditionalBranchNode.getThenBlock() == null;
+        assert conditionalBranchNode.getElseBlock() == null;
+    }
+
+    @Test
     public void testBasicIf() {
         Parser parser = new Parser(lexer.lex("if (a == 0) { b = 1; }"));
         Node node = parser.parse();
         assert node != null;
         assert node instanceof BlockNode;
         assert ((BlockNode) node).getStatements().size() == 1;
-        assert ((BlockNode) node).getStatements().get(0) instanceof ConditionalNode;
-        ConditionalNode conditionalNode = (ConditionalNode)((BlockNode) node).getStatements().get(0);
-        assert conditionalNode.getCondition().getLeft().getType() == TokenType.SYMBOL && conditionalNode.getCondition().getLeft().getValue().equals("a");
-        assert conditionalNode.getCondition().getRight().getType() == TokenType.NUMBER && conditionalNode.getCondition().getRight().getValue().equals("0");
-        assert conditionalNode.getCondition().getOperator().getType() == TokenType.EQUAL;
-        BlockNode thenBlock = conditionalNode.getThenBlock();
+        assert ((BlockNode) node).getStatements().get(0) instanceof ConditionalBranchNode;
+        ConditionalBranchNode conditionalBranchNode = (ConditionalBranchNode)((BlockNode) node).getStatements().get(0);
+        assert conditionalBranchNode.getCondition().getLeft().getType() == TokenType.SYMBOL && conditionalBranchNode.getCondition().getLeft().getValue().equals("a");
+        assert conditionalBranchNode.getCondition().getRight().getType() == TokenType.NUMBER && conditionalBranchNode.getCondition().getRight().getValue().equals("0");
+        assert conditionalBranchNode.getCondition().getOperator().getType() == TokenType.EQUAL;
+        BlockNode thenBlock = conditionalBranchNode.getThenBlock();
         assert thenBlock.getStatements().size() == 1;
         assert thenBlock.getStatements().get(0) instanceof AssignmentNode;
         AssignmentNode assignmentNode = (AssignmentNode)thenBlock.getStatements().get(0);
         assert assignmentNode.getSymbol().getValue().equals("b");
         assert assignmentNode.getValue().getType() == TokenType.NUMBER;
         assert assignmentNode.getValue().getValue().equals("1");
-        assert conditionalNode.getElseBlock() == null;
+        assert conditionalBranchNode.getElseBlock() == null;
     }
 
     @Test
@@ -91,20 +103,20 @@ public class ParserTest {
         assert node != null;
         assert node instanceof BlockNode;
         assert ((BlockNode) node).getStatements().size() == 1;
-        assert ((BlockNode) node).getStatements().get(0) instanceof ConditionalNode;
-        ConditionalNode conditionalNode = (ConditionalNode)((BlockNode) node).getStatements().get(0);
-        assert conditionalNode.getCondition().getLeft().getType() == TokenType.SYMBOL && conditionalNode.getCondition().getLeft().getValue().equals("a");
-        assert conditionalNode.getCondition().getRight().getType() == TokenType.NUMBER && conditionalNode.getCondition().getRight().getValue().equals("0");
-        assert conditionalNode.getCondition().getOperator().getType() == TokenType.EQUAL;
-        BlockNode thenBlock = conditionalNode.getThenBlock();
+        assert ((BlockNode) node).getStatements().get(0) instanceof ConditionalBranchNode;
+        ConditionalBranchNode conditionalBranchNode = (ConditionalBranchNode)((BlockNode) node).getStatements().get(0);
+        assert conditionalBranchNode.getCondition().getLeft().getType() == TokenType.SYMBOL && conditionalBranchNode.getCondition().getLeft().getValue().equals("a");
+        assert conditionalBranchNode.getCondition().getRight().getType() == TokenType.NUMBER && conditionalBranchNode.getCondition().getRight().getValue().equals("0");
+        assert conditionalBranchNode.getCondition().getOperator().getType() == TokenType.EQUAL;
+        BlockNode thenBlock = conditionalBranchNode.getThenBlock();
         assert thenBlock.getStatements().size() == 1;
         assert thenBlock.getStatements().get(0) instanceof AssignmentNode;
         AssignmentNode assignmentNode = (AssignmentNode)thenBlock.getStatements().get(0);
         assert assignmentNode.getSymbol().getValue().equals("b");
         assert assignmentNode.getValue().getType() == TokenType.NUMBER;
         assert assignmentNode.getValue().getValue().equals("1");
-        assert conditionalNode.getElseBlock() != null;
-        BlockNode elseBlock = conditionalNode.getElseBlock();
+        assert conditionalBranchNode.getElseBlock() != null;
+        BlockNode elseBlock = conditionalBranchNode.getElseBlock();
         assert elseBlock.getStatements().size() == 1;
         assert thenBlock.getStatements().get(0) instanceof AssignmentNode;
         assignmentNode = (AssignmentNode)elseBlock.getStatements().get(0);
