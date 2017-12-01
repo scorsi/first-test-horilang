@@ -22,10 +22,12 @@ public class LexerTest {
 
     @Test
     public void testBasicVarDeclarationWithAssignment() {
-        LexerStream stream = lexer.lex("var a = 1;");
+        LexerStream stream = lexer.lex("var a : Integer = 1;");
 
         expectedToken(new Token(TokenType.VAR, null), stream.next(), false);
         expectedToken(new Token(TokenType.SYMBOL, "a"), stream.next(), true);
+        expectedToken(new Token(TokenType.DDOT, null), stream.next(), false);
+        expectedToken(new Token(TokenType.TYPE, "Integer"), stream.next(), true);
         expectedToken(new Token(TokenType.ASSIGN, null), stream.next(), false);
         expectedToken(new Token(TokenType.NUMBER, "1"), stream.next(), true);
         expectedToken(new Token(TokenType.SEMICOLON, null), stream.next(), false);
