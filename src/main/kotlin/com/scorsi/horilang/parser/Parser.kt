@@ -9,14 +9,15 @@ class Parser constructor(val lexer: LexerStream) {
 
     private var current: Token? = null
 
-    private fun expectNextToken(expectedTypes: List<TokenType>): Boolean {
-        current = lexer.next()
-        return when (current) {
-            null -> false
-            else -> expectedTypes.contains((current as Token).type)
-        }
-    }
-
+    private fun expectNextToken(expectedTypes: List<TokenType>): Boolean =
+            lexer.next().let {
+                current = it
+                when (current) {
+                    null-> false
+                    else -> expectedTypes.contains((current as Token).type)
+                }
+            }
+    
     private fun getType(): Token =
             expectNextToken(listOf(TokenType.TYPE)).let {
                 when (it) {
