@@ -1,6 +1,6 @@
 package com.scorsi.horilang.parser.ast
 
 /**
- * Statement = (Assignment | Declaration) SEMICOLON
+ * Statement = (Assignment | Declaration | ConditionalBranch) SEMICOLON
  */
 abstract class StatementNode : Node()

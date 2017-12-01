@@ -29,9 +29,9 @@ public class ParserTest {
         assert ((BlockNode) node).getStatements().size() == 1;
         assert ((BlockNode) node).getStatements().get(0) instanceof DeclarationNode;
         DeclarationNode declarationNode = (DeclarationNode)((BlockNode) node).getStatements().get(0);
-        assert declarationNode.getSymbol().getType() == TokenType.SYMBOL && declarationNode.getSymbol().getValue().equals("a");
+        assert declarationNode.getSymbol().getValue().getType() == TokenType.SYMBOL && declarationNode.getSymbol().getValue().getValue().equals("a");
         assert declarationNode.getType().getType() == TokenType.TYPE && declarationNode.getType().getValue().equals("Integer");
-        assert declarationNode.getValue() == null;
+        assert declarationNode.getRightValue() == null;
     }
 
     @Test
@@ -43,9 +43,9 @@ public class ParserTest {
         assert ((BlockNode) node).getStatements().size() == 1;
         assert ((BlockNode) node).getStatements().get(0) instanceof DeclarationNode;
         DeclarationNode declarationNode = (DeclarationNode)((BlockNode) node).getStatements().get(0);
-        assert declarationNode.getSymbol().getType() == TokenType.SYMBOL && declarationNode.getSymbol().getValue().equals("testString");
+        assert declarationNode.getSymbol().getValue().getType() == TokenType.SYMBOL && declarationNode.getSymbol().getValue().getValue().equals("testString");
         assert declarationNode.getType().getType() == TokenType.TYPE && declarationNode.getType().getValue().equals("String");
-        assert declarationNode.getValue().getType() == TokenType.STRING && declarationNode.getValue().getValue().equals("\"test test\"");
+        assert ((ValueNode)declarationNode.getRightValue()).getValue().getType() == TokenType.STRING && ((ValueNode)declarationNode.getRightValue()).getValue().getValue().equals("\"test test\"");
     }
 
     @Test
@@ -57,8 +57,8 @@ public class ParserTest {
         assert ((BlockNode) node).getStatements().size() == 1;
         assert ((BlockNode) node).getStatements().get(0) instanceof AssignmentNode;
         AssignmentNode assignmentNode = (AssignmentNode)((BlockNode) node).getStatements().get(0);
-        assert assignmentNode.getSymbol().getType() == TokenType.SYMBOL && assignmentNode.getSymbol().getValue().equals("abcAZ9");
-        assert assignmentNode.getValue().getType() == TokenType.STRING && assignmentNode.getValue().getValue().equals("\"test\"");
+        assert assignmentNode.getLeftValue().getType() == TokenType.SYMBOL && assignmentNode.getLeftValue().getValue().equals("abcAZ9");
+        //assert assignmentNode.getRightValue().getType() == TokenType.STRING && assignmentNode.getRightValue().getValue().equals("\"test\"");
     }
 
     @Test
@@ -90,9 +90,9 @@ public class ParserTest {
         assert thenBlock.getStatements().size() == 1;
         assert thenBlock.getStatements().get(0) instanceof AssignmentNode;
         AssignmentNode assignmentNode = (AssignmentNode)thenBlock.getStatements().get(0);
-        assert assignmentNode.getSymbol().getValue().equals("b");
-        assert assignmentNode.getValue().getType() == TokenType.NUMBER;
-        assert assignmentNode.getValue().getValue().equals("1");
+        assert assignmentNode.getLeftValue().getValue().equals("b");
+        assert ((ValueNode)assignmentNode.getRightValue()).getValue().getType() == TokenType.NUMBER;
+        assert ((ValueNode)assignmentNode.getRightValue()).getValue().getValue().equals("1");
         assert conditionalBranchNode.getElseBlock() == null;
     }
 
@@ -112,17 +112,17 @@ public class ParserTest {
         assert thenBlock.getStatements().size() == 1;
         assert thenBlock.getStatements().get(0) instanceof AssignmentNode;
         AssignmentNode assignmentNode = (AssignmentNode)thenBlock.getStatements().get(0);
-        assert assignmentNode.getSymbol().getValue().equals("b");
-        assert assignmentNode.getValue().getType() == TokenType.NUMBER;
-        assert assignmentNode.getValue().getValue().equals("1");
+        assert assignmentNode.getLeftValue().getValue().equals("b");
+        assert ((ValueNode)assignmentNode.getRightValue()).getValue().getType() == TokenType.NUMBER;
+        assert ((ValueNode)assignmentNode.getRightValue()).getValue().getValue().equals("1");
         assert conditionalBranchNode.getElseBlock() != null;
         BlockNode elseBlock = conditionalBranchNode.getElseBlock();
         assert elseBlock.getStatements().size() == 1;
         assert thenBlock.getStatements().get(0) instanceof AssignmentNode;
         assignmentNode = (AssignmentNode)elseBlock.getStatements().get(0);
-        assert assignmentNode.getSymbol().getValue().equals("c");
-        assert assignmentNode.getValue().getType() == TokenType.NUMBER;
-        assert assignmentNode.getValue().getValue().equals("2");
+        assert assignmentNode.getLeftValue().getValue().equals("c");
+        assert ((ValueNode)assignmentNode.getRightValue()).getValue().getType() == TokenType.NUMBER;
+        assert ((ValueNode)assignmentNode.getRightValue()).getValue().getValue().equals("2");
     }
 
 }
