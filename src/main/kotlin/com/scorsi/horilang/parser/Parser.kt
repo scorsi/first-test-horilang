@@ -123,7 +123,7 @@ class Parser constructor(val lexer: LexerStream) {
                 }
             }
 
-    private fun getConditionalNodeCondition(): ConditionNode =
+    private fun getConditionalBranchNodeCondition(): ConditionNode =
             getLParen().let { getValue().let { left -> getComparator().let { comparator -> getValue().let { right -> getRParen().let { ConditionNode(left, right, comparator) } } } } }
 
     private fun getBody(): BlockNode? =
@@ -137,8 +137,8 @@ class Parser constructor(val lexer: LexerStream) {
                 }
             }
 
-    private fun getConditionalNode(): ConditionalBranchNode? =
-            getConditionalNodeCondition().let { condition ->
+    private fun getConditionalBranchNode(): ConditionalBranchNode? =
+            getConditionalBranchNodeCondition().let { condition ->
                 getBody().let { thenBlock ->
                     expectNextToken(listOf(TokenType.ELSE)).let {
                         when (it) {
@@ -177,7 +177,7 @@ class Parser constructor(val lexer: LexerStream) {
                 else -> when ((current as Token).type) {
                     TokenType.VAR -> getDeclarationNode()
                     TokenType.SYMBOL -> getStatementNodeStartWithSymbol()
-                    TokenType.IF -> getConditionalNode()
+                    TokenType.IF -> getConditionalBranchNode()
                     else -> getValueNode()
                 }.let { ret ->
                     when (ret) {
