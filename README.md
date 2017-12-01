@@ -28,7 +28,7 @@ import com.scorsi.horilang.lexer.Token
 import com.scorsi.horilang.lexer.builder.LexerBuilder
 
 def lexer = new LexerBuilder().defaultBuild()
-def stream = lexer.lex("var a = 1; if (a == true) { print(\"success\") }")
+def stream = lexer.lex("var a = 1; if (a == true) { print(\"success\"); }")
 Token token = stream.next()
 while (token) {
   println(token)
@@ -48,7 +48,7 @@ import com.scorsi.horilang.lexer.builder.LexerBuilder
 import com.scorsi.horilang.parser.Parser
 
 def lexer = new LexerBuilder().defaultBuild()
-def stream = lexer.lex("var a = 1; if (a == true) { print(\"success\") }")
+def stream = lexer.lex("var a = 1; if (a == true) { print(\"success\"); }")
 def parser = new Parser(stream)
 def node = parser.parse()
 println(node)
