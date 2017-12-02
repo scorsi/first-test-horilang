@@ -5,6 +5,7 @@ import com.scorsi.horilang.lexer.TokenType
 
 enum class DefaultRule constructor(val tokenType: TokenType, val regex: Regex) {
     VAR(TokenType.VAR, """var""".toRegex()),
+    FUNC(TokenType.FUNC, """func""".toRegex()),
     IF(TokenType.IF, """if""".toRegex()),
     ELSE(TokenType.ELSE, """else""".toRegex()),
     STRING(TokenType.STRING, """\".*\"""".toRegex()),

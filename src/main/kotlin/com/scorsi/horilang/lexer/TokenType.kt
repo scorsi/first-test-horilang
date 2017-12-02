@@ -1,8 +1,9 @@
 package com.scorsi.horilang.lexer
 
 enum class TokenType{
-    // VAR STATEMENT
+    // DECLARATION STATEMENT
     VAR,
+    FUNC,
 
     // IF STATEMENT
     IF,

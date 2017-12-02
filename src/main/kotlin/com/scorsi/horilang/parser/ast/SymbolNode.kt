@@ -1,9 +1,9 @@
 package com.scorsi.horilang.parser.ast
 
-import com.scorsi.horilang.lexer.Token
+import com.scorsi.horilang.lexer.TokenType
 
-class SymbolNode constructor(value: Token) : ValueNode(value) {
+class SymbolNode constructor(value: String) : ValueNode(value, TokenType.SYMBOL) {
     override fun toString(): String {
-        return return "SymbolNode(value=$value)"
+        return "SymbolNode(value=$value)"
     }
 }
