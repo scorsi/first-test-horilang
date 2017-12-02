@@ -17,10 +17,7 @@ class LexerStream constructor(private val lexer: Lexer) {
             try {
                 when {
                     endPos == startPos -> when {
-                        endPos >= lexer.input.length -> when (matched) {
-                            true -> endPos - 1
-                            false -> throw LexerSyntaxError(lexer.input[endPos].toString())
-                        }
+                        endPos >= lexer.input.length -> lexer.input.length + 1
                         lexer.rules.any { lexer.input[endPos].toString().matchesRule(it) } ->
                             advanceToNextToken(endPos + 1, true)
                         else -> when (matched) {
