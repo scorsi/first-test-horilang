@@ -43,7 +43,8 @@ class LexerStream constructor(private val lexer: Lexer) {
                     else -> throw LexerUnknownError()
                 }
             } catch (e: StringIndexOutOfBoundsException) {
-                throw LexerSyntaxError(lexer.input.substring(startPos, endPos - 1))
+                e.printStackTrace()
+                throw LexerUnknownError()
             }
 
     fun next(): String? =

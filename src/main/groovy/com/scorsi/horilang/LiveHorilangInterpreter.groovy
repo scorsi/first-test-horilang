@@ -2,6 +2,7 @@ package com.scorsi.horilang
 
 import com.scorsi.horilang.ast.AssignmentNode
 import com.scorsi.horilang.ast.DeclarationNode
+import com.scorsi.horilang.ast.SymbolNode
 import com.scorsi.horilang.lexer.LexerRule
 import com.scorsi.horilang.parser.ParserRuleTree
 import com.scorsi.horilang.parser.ParserRule
@@ -65,24 +66,29 @@ class LiveHorilangInterpreter implements Runnable {
 
         pb.addRule(
                 new ParserRuleTree(new ParserRule(TokenType.VAR), Arrays.asList(
-                        new ParserRuleTree(new ParserRule(TokenType.SYMBOL, true, DeclarationNode), Arrays.asList(
+                        new ParserRuleTree(new ParserRule(TokenType.SYMBOL, true, DeclarationNode), Arrays.asList( // VAR SYMBOL
                                 new ParserRuleTree(new ParserRule(TokenType.ASSIGN),
-                                        generateValueRule(true, DeclarationNode)
+                                        generateValueRule(true, DeclarationNode) // VAR SYMBOL EQUAL value
                                 )
                         ))
                 ))
         )
         pb.addRule(
-                new ParserRuleTree(new ParserRule(TokenType.SYMBOL), Arrays.asList(
+                new ParserRuleTree(new ParserRule(TokenType.SYMBOL, true, SymbolNode), Arrays.asList( // SYMBOL
                         new ParserRuleTree(new ParserRule(TokenType.ASSIGN),
-                                generateValueRule(true, AssignmentNode)
+                                generateValueRule(true, AssignmentNode) // SYMBOL ASSIGN value
                         )
                 ))
         )
 
-        def parser = pb.build(lb.build(input))
-        println(parser.parse())
-        println(parser.lexer.tokens)
+        try {
+            def parser = pb.build(lb.build(input))
+            println(parser.parse())
+            println(parser.lexer.tokens)
+        } catch (Error e) {
+            println(e.toString())
+        }
+
 
     }
 
