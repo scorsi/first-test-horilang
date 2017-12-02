@@ -81,13 +81,13 @@ class LiveHorilangInterpreter implements Runnable {
                 ))
         )
 
-        try {
-            def parser = pb.build(lb.build(input))
-            println(parser.parse())
-            println(parser.lexer.tokens)
-        } catch (Error e) {
-            println(e.toString())
-        }
+//        try {
+        def parser = pb.build(lb.build(input))
+        println("Returned: " + parser.parse())
+        println("Remaining: " + parser.lexer.tokens)
+//        } catch (Error e) {
+//            println(e.toString())
+//        }
 
 
     }
