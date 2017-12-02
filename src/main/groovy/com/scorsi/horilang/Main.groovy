@@ -5,7 +5,7 @@ class Main {
     static void main(String[] args) {
         def input = new Scanner(System.in)
         while (input.hasNext()) {
-            new Thread(new ParserRunner(input.nextLine())).start()
+            new Thread(new LiveHorilangInterpreter(input.nextLine())).start()
         }
     }
 

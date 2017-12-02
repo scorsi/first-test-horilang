@@ -1,60 +1,68 @@
 package com.scorsi.horilang.lexer
 
-class LexerStream constructor(val rules: List<Rule>, private var input: String) {
+class LexerStream constructor(private val lexer: Lexer) {
 
-    var startPos: Int = 0
-
-    init {
-        input += " "
-    }
-
-    private fun String.matchRule(rule: Rule) = matches(rule.regex)
+    private var startPos = 0
+    var line = 0
+    var column = 0
 
     private fun skipWhitespace(pos: Int): Int =
             when {
-                pos >= input.length -> pos
-                input[pos].toString().matches("""\s""".toRegex()) -> skipWhitespace(pos + 1)
+                pos >= lexer.input.length -> pos
+                lexer.input[pos].toString().matches("""[ \t]""".toRegex()) -> skipWhitespace(pos + 1)
                 else -> pos
             }
 
-    private fun advance(pos: Int, matched: Boolean = false): Int =
-            when {
-                pos >= input.length -> pos - 1
-                else -> when {
-                    pos == startPos && rules.any { input[pos].toString().matchRule(it) } -> advance(pos + 1, true)
-                    pos != startPos && rules.any { input.substring(startPos, pos).matchRule(it) } -> advance(pos + 1, true)
-                    else -> when (matched) {
-                        true -> pos - 1
-                        false -> advance(pos + 1)
+    private fun advanceToNextToken(endPos: Int, matched: Boolean = false): Int =
+            try {
+                when {
+                    endPos == startPos -> when {
+                        endPos >= lexer.input.length -> when (matched) {
+                            true -> endPos - 1
+                            false -> throw LexerSyntaxError(lexer.input[endPos].toString())
+                        }
+                        lexer.rules.any { lexer.input[endPos].toString().matchesRule(it) } ->
+                            advanceToNextToken(endPos + 1, true)
+                        else -> when (matched) {
+                            true -> endPos - 1
+                            false -> advanceToNextToken(endPos + 1, matched)
+                        }
                     }
+                    endPos > startPos -> when {
+                        endPos > lexer.input.length -> when (matched) {
+                            true -> endPos - 1
+                            false -> throw LexerSyntaxError(lexer.input.substring(startPos, endPos))
+                        }
+                        lexer.rules.any { lexer.input.substring(startPos, endPos).matchesRule(it) } ->
+                            advanceToNextToken(endPos + 1, true)
+                        else -> when (matched) {
+                            true -> endPos - 1
+                            false -> advanceToNextToken(endPos + 1, matched)
+                        }
+                    }
+                    else -> throw LexerUnknownError()
                 }
+            } catch (e: StringIndexOutOfBoundsException) {
+                throw LexerSyntaxError(lexer.input.substring(startPos, endPos - 1))
             }
 
-    private fun createToken(s: String): Token = rules.first { s.matchRule(it) }.let { Token(it.tokenType, s) }
-
-    fun next(): Token? =
+    fun next(): String? =
             when {
-                startPos >= input.length -> null
-                else -> skipWhitespace(startPos).let { pos ->
-                    startPos = pos
-                    advance(startPos).let { endPos ->
+                startPos >= lexer.input.length -> null
+                else -> skipWhitespace(startPos).let {
+                    startPos = it
+                    advanceToNextToken(startPos).let { endPos ->
                         when {
-                            endPos >= input.length || endPos < startPos -> null
-                            endPos == startPos -> input[endPos].toString()
-                            else -> input.substring(startPos, endPos)
+                            endPos > lexer.input.length || endPos < startPos -> null
+                            endPos == startPos -> lexer.input[endPos].toString()
+                            else -> lexer.input.substring(startPos, endPos)
                         }.let { ret ->
+                            line = endPos - startPos
                             startPos = endPos
-                            when (ret) {
-                                null -> null
-                                else -> createToken(ret)
-                            }
+                            ret
                         }
                     }
                 }
             }
-
-    fun reset() {
-        startPos = 0
-    }
 
 }
