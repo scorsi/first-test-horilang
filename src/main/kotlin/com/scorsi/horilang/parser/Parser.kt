@@ -5,9 +5,9 @@ import com.scorsi.horilang.ast.Node
 import com.scorsi.horilang.lexer.Lexer
 import kotlin.reflect.full.primaryConstructor
 
-class Parser constructor(val lexer: Lexer, private val rules: ArrayList<ParserRuleTree<ParserRule>>) {
+class Parser constructor(val lexer: Lexer, private val rules: ArrayList<ParserRuleTree<ParserRuleContainer>>) {
 
-    private fun parseTree(matchedRule: ParserRuleTree<ParserRule>, level: Int): Node? =
+    private fun parseTree(matchedRule: ParserRuleTree<ParserRuleContainer>, level: Int): Node? =
             lexer.peek(level + 1).let { newToken ->
                 when (newToken) {
                     null -> when (matchedRule.value.isEnd) {
@@ -18,7 +18,7 @@ class Parser constructor(val lexer: Lexer, private val rules: ArrayList<ParserRu
                         var matchedClass: Node? = null
                         var match = false
                         matchedRule.children
-                                .filter { it.value.token == newToken.type }
+                                .filter { it.value.rule.token == newToken.type }
                                 .forEach { rule ->
                                     match = true
                                     parseTree(rule, level + 1).let {
@@ -45,7 +45,7 @@ class Parser constructor(val lexer: Lexer, private val rules: ArrayList<ParserRu
     fun parseStatement(): Node? =
             lexer.peek(1).let { token ->
                 var matchedClass: Node? = null
-                rules.filter { it.value.token == token?.type }
+                rules.filter { it.value.rule.token == token?.type }
                         .forEach { rule ->
                             parseTree(rule, 1).let {
                                 when (it) {
@@ -71,6 +71,7 @@ class Parser constructor(val lexer: Lexer, private val rules: ArrayList<ParserRu
                         when (statement) {
                             null -> list
                             else -> {
+                                println("Creating: $statement")
                                 list.add(statement)
                                 lexer.peek(1).let { token ->
                                     when (token) {
