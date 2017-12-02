@@ -1,0 +1,18 @@
+
+// BASE NODE
+Rule:Block = List<Rule:Statement>
+Rule:Statement = Rule:Declaration Token:EOI
+Rule:Statement = Rule:Assignment Token:EOI
+
+// NODE DECLARATION
+Rule:Declaration = Token:VAR Token:SYMBOL
+Rule:Declaration = Token:VAR Token:SYMBOL Token:EQUAL Rule:Value
+
+// NODE ASSIGNMENT
+Rule:Assignment = Token:SYMBOL Token:EQUAL Node:Value
+
+// NODE VALUE
+Rule:Value = Token:STRING
+Rule:Value = Token:INTEGER
+Rule:Value = Token:FLOAT
+Rule:Value = Token:SYMBOL

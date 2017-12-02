@@ -1,4 +1,7 @@
-package com.scorsi.horilang.lexer
+package com.scorsi.horilang
+
+import com.scorsi.horilang.lexer.Lexer
+import com.scorsi.horilang.lexer.LexerRule
 
 class LexerBuilder {
 
