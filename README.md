@@ -34,6 +34,7 @@ Getting: Token(type=EOI, value=;)
 Peeking: Token(type=EOI, value=;) at 5
 Purging: [Token(type=VAR, value=var), Token(type=SYMBOL, value=a), Token(type=ASSIGN, value==), Token(type=INTEGER, value=3)]
 Remaining: [Token(type=EOI, value=;)]
+Creating: DeclarationNode(symbol=a, type=Integer, value=3)
 Peeking: Token(type=EOI, value=;) at 1
 Purging: [Token(type=EOI, value=;)]
 Remaining: []
@@ -47,6 +48,7 @@ Getting: Token(type=EOI, value=;)
 Peeking: Token(type=EOI, value=;) at 4
 Purging: [Token(type=SYMBOL, value=a), Token(type=ASSIGN, value==), Token(type=INTEGER, value=3)]
 Remaining: [Token(type=EOI, value=;)]
+Creating: AssignmentNode(leftValue=a, rightValue=3, rightValueType=Integer)
 Peeking: Token(type=EOI, value=;) at 1
 Purging: [Token(type=EOI, value=;)]
 Remaining: []
