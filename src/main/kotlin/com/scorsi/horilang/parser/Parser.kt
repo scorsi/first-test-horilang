@@ -96,14 +96,14 @@ class Parser constructor(val lexer: LexerStream) {
                     expectNextToken(listOf(TokenType.ASSIGN)).let {
                         // CHECK IF THE DECLARATION ALSO ASSIGN
                         when (it) {
-                            false -> DeclarationNode(SymbolNode(symbol), type)
+                            false -> DeclarationNode(SymbolNode(symbol.value as String), type)
                             true -> lexer.next().let {
                                 current = it
-                                getStatementNode().let {
+                                getStatementNodeWithoutSemicolon().let {
                                     when (it) {
                                         null -> throw Error("Expected right value")
-                                        // CHECK HERE TO ALLOW DIFFERENT RIGHTVALUE FOR DECLARATIONNODE
-                                        else -> DeclarationNode(SymbolNode(symbol), type, it)
+                                    // CHECK HERE TO ALLOW DIFFERENT RIGHTVALUE FOR DECLARATIONNODE
+                                        else -> DeclarationNode(SymbolNode(symbol.value as String), type, it)
                                     }
                                 }
                             }
@@ -115,16 +115,24 @@ class Parser constructor(val lexer: LexerStream) {
     private fun getAssignmentNode(symbol: Token): AssignmentNode? =
             lexer.next().let {
                 current = it
-                getStatementNode().let { value ->
+                getStatementNodeWithoutSemicolon().let { value ->
                     when (value) {
-                        null -> throw Error()
+                        null -> throw Error("An assignment must have a rvalue.")
                         else -> AssignmentNode(symbol, value)
                     }
                 }
             }
 
     private fun getConditionalBranchNodeCondition(): ConditionNode =
-            getLParen().let { getValue().let { left -> getComparator().let { comparator -> getValue().let { right -> getRParen().let { ConditionNode(left, right, comparator) } } } } }
+            getLParen().let {
+                getValue().let { left ->
+                    getComparator().let { comparator ->
+                        getValue().let { right ->
+                            getRParen().let { ConditionNode(left, right, comparator) }
+                        }
+                    }
+                }
+            }
 
     private fun getBody(): BlockNode? =
             getLBrace().let {
@@ -152,9 +160,46 @@ class Parser constructor(val lexer: LexerStream) {
     private fun getValueNode(): ValueNode? =
             (current as Token).let {
                 when (it.type) {
-                    TokenType.NUMBER -> ValueNode(it)
-                    TokenType.STRING -> ValueNode(it)
+                    TokenType.NUMBER -> ValueNode(it.value as String, it.type)
+                    TokenType.STRING -> ValueNode(it.value as String, it.type)
                     else -> null
+                }
+            }
+
+    private fun getFuncNodeArguments(list: MutableList<ArgumentNode>): MutableList<ArgumentNode> =
+            when (current) {
+                null -> list
+                else -> expectNextToken(listOf(TokenType.SYMBOL)).let {
+                    val symbol = current as Token
+                    when (it) {
+                        false -> list
+                        true -> expectNextToken(listOf(TokenType.DDOT)).let {
+                            expectNextToken(listOf(TokenType.TYPE)).let {
+                                list.add(ArgumentNode(SymbolNode(symbol.value as String), current as Token))
+                                list
+                            }
+                        }
+                    }
+                }
+            }
+
+    private fun getFuncNodeArgument(): MutableList<ArgumentNode> =
+            getLParen().let {
+                getFuncNodeArguments(mutableListOf()).let { list ->
+                    when (current) {
+                        null -> throw TokenExpecting(listOf(TokenType.RPAREN), current)
+                        else -> when ((current as Token).type) {
+                            TokenType.RPAREN -> list
+                            else -> getRParen().let { list }
+                        }
+                    }
+                }
+            }
+
+    private fun getFuncNode(): FuncNode? =
+            getSymbol().let { symbol ->
+                getFuncNodeArgument().let { arguments ->
+                    FuncNode(SymbolNode(symbol.value as String), arguments, getBody())
                 }
             }
 
@@ -162,41 +207,45 @@ class Parser constructor(val lexer: LexerStream) {
             current.let { symbol ->
                 lexer.next().let {
                     when (it) {
-                        null -> SymbolNode(symbol as Token)
+                        null -> SymbolNode(symbol!!.value as String)
                         else -> when (it.type) {
                             TokenType.ASSIGN -> getAssignmentNode(symbol as Token)
-                            else -> SymbolNode(symbol as Token)
+                            else -> SymbolNode(symbol!!.value as String)
                         }
                     }
                 }
             }
 
-    private fun getStatementNode(): StatementNode? =
+    private fun getStatementNodeWithoutSemicolon(): StatementNode? =
             when (current) {
                 null -> null
-                else -> when ((current as Token).type) {
+                else -> when (current!!.type) {
+                    TokenType.FUNC -> getFuncNode()
                     TokenType.VAR -> getDeclarationNode()
                     TokenType.SYMBOL -> getStatementNodeStartWithSymbol()
                     TokenType.IF -> getConditionalBranchNode()
                     else -> getValueNode()
-                }.let { ret ->
-                    when (ret) {
-                        null -> null
-                        else -> when {
-                            current == null -> ret
-                            (current as Token).type == TokenType.SEMICOLON -> ret
-                            else -> expectNextToken(listOf(TokenType.SEMICOLON)).let {
-                                when {
-                                    current == null || it -> ret
-                                    else -> throw Error("Statement syntax error : missing \";\"")
-                                }
+                }
+            }
+
+    private fun getStatementNode(): StatementNode? =
+            getStatementNodeWithoutSemicolon().let { ret ->
+                when (ret) {
+                    null -> null
+                    else -> when {
+                        current == null -> ret
+                        current!!.type == TokenType.SEMICOLON -> ret
+                        else -> expectNextToken(listOf(TokenType.SEMICOLON)).let {
+                            when {
+                                current == null || it -> ret
+                                else -> throw Error("Statement syntax error : missing \";\"")
                             }
                         }
                     }
                 }
             }
 
-    private fun getAllStatementNodes(list: MutableList<StatementNode>): MutableList<StatementNode> =
+    private fun getAllStatementNodes(list: MutableList<StatementNode> = mutableListOf()): MutableList<StatementNode> =
             when (current) {
                 null -> list
                 else -> getStatementNode().let {
@@ -214,7 +263,7 @@ class Parser constructor(val lexer: LexerStream) {
     private fun getBlockNode(): BlockNode? =
             when (current) {
                 null -> null
-                else -> getAllStatementNodes(mutableListOf()).let {
+                else -> getAllStatementNodes().let {
                     when {
                         it.isEmpty() -> null
                         else -> BlockNode(it)
