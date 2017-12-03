@@ -4,21 +4,25 @@ enum class TokenType {
     // KEYWORDS
     VAR,                    // VARIABLE DECLARATION
     FUN,                    // FUNCTION DECLARATION
+    IF,                     // IF
+    ELSE,                   // ELSE
 
     // VALUES
-    INTEGER,
-    FLOAT,
-    STRING,
+    INTEGER,                // NUMBER
+    FLOAT,                  // DECIMAL
+    STRING,                 // STRING
 
     // USER-KEYWORD
     SYMBOL,                 // VARIABLE OR FUNCTION NAME
 
     // REGISTERED CHARACTERS
     DOT,                    // "."
+    DDOT,                   // ":"
     LPAREN,                 // "("
     RPAREN,                 // ")"
     LBRACE,                 // "{"
     RBRACE,                 // "}"
+    COMMA,                  // ","
 
     // ACTIONS
     ASSIGN,                 // ASSIGNMENT
