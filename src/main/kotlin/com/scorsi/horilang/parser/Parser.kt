@@ -64,7 +64,7 @@ class Parser constructor(val lexer: Lexer, private val rules: ArrayList<ParserRu
             }
 
     fun parseBlock(list: MutableList<Node>): List<Node> =
-            lexer.next().let {
+            lexer.nextToken().let {
                 when (lexer.streamFinished) {
                     true -> list
                     false -> parseStatement().let { statement ->
