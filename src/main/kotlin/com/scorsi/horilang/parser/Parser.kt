@@ -5,65 +5,61 @@ import com.scorsi.horilang.ast.Node
 import com.scorsi.horilang.lexer.Lexer
 import kotlin.reflect.full.primaryConstructor
 
-class Parser constructor(val lexer: Lexer, private val rules: ArrayList<ParserRuleTree<ParserRuleContainer>>) {
+class Parser constructor(val lexer: Lexer, private val rules: Map<String, Pair<Class<Node>, ArrayList<ParserRuleTree<ParserRuleContainer>>>>) {
 
-    private fun parseTree(matchedRule: ParserRuleTree<ParserRuleContainer>, level: Int): Node? =
-            lexer.peek(level + 1).let { newToken ->
+    private fun parseTreeToken(classToCreate: Class<Node>, matchedRule: ParserRuleTree<ParserRuleContainer>, level: Int): Pair<Node?, Boolean> =
+            lexer.peek(level).let { newToken ->
                 when (newToken) {
-                    null -> when (matchedRule.value.isEnd) {
-                        true -> matchedRule.value.node!!.kotlin.primaryConstructor!!.call().build(lexer.purge(level))
-                        false -> null
-                    }
-                    else -> {
-                        var matchedClass: Node? = null
-                        var match = false
-                        matchedRule.children
-                                .filter { it.value.rule.token == newToken.type }
-                                .forEach { rule ->
-                                    match = true
-                                    parseTree(rule, level + 1).let {
-                                        if (it != null) {
-                                            matchedClass = it
-                                            return@forEach
-                                        } else null
+                    null -> Pair(null, false)
+                    else -> when {
+                        newToken.type == matchedRule.value.rule.token -> {
+                            var match = false
+                            matchedRule.children
+                                    .forEach { rule ->
+                                        parseTree(classToCreate, rule, level + 1).let {
+                                            if (it.second)
+                                                match = true
+                                            if (it.first != null)
+                                                return it
+                                        }
                                     }
-                                }
-                        return when (matchedClass) {
-                            null -> when (match) {
-                                true -> null
+                            when (match) {
+                                true -> Pair(null, true)
                                 false -> when (matchedRule.value.isEnd) {
-                                    true -> matchedRule.value.node!!.kotlin.primaryConstructor!!.call().build(lexer.purge(level))
-                                    false -> null
+                                    true -> Pair(classToCreate.kotlin.primaryConstructor!!.call().build(lexer.purge(level)), true)
+                                    false -> Pair(null, true)
                                 }
                             }
-                            else -> matchedClass
                         }
+                        else -> Pair(null, false)
                     }
                 }
             }
 
-    fun parseStatement(): Node? =
-            lexer.peek(1).let { token ->
-                var matchedClass: Node? = null
-                rules.filter { it.value.rule.token == token?.type }
-                        .forEach { rule ->
-                            parseTree(rule, 1).let {
-                                when (it) {
-                                    null -> null
-                                    else -> {
-                                        matchedClass = it
-                                        return@forEach
-                                    }
-                                }
-                            }
-                        }
-                when (matchedClass) {
-                    null -> throw ParserInstructionNotFound(lexer.tokens)
-                    else -> matchedClass
+    private fun parseTree(classToCreate: Class<Node>, matchedRule: ParserRuleTree<ParserRuleContainer>, level: Int): Pair<Node?, Boolean> =
+            when (matchedRule.value.rule.token) {
+                null -> when (matchedRule.value.rule.specialRule) {
+                    null -> throw Error()
+                    else -> TODO("Not implemented yet")
                 }
+                else -> parseTreeToken(classToCreate, matchedRule, level)
             }
 
-    fun parseBlock(list: MutableList<Node>): List<Node> =
+    private fun parseStatement(): Node? =
+            lexer.nextToken().let { _ ->
+                rules.forEach { rule ->
+                    rule.value.second
+                            .forEach { ruleToTest ->
+                                parseTree(rule.value.first, ruleToTest, 1).let {
+                                    if (it.first != null)
+                                        return it.first
+                                }
+                            }
+                }
+                throw ParserInstructionNotFound(lexer.tokens)
+            }
+
+    private fun parseBlock(list: MutableList<Node>): List<Node> =
             lexer.nextToken().let {
                 when (lexer.streamFinished) {
                     true -> list
