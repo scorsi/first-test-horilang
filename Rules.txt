@@ -1,18 +1,51 @@
 
 // BASE NODE
-Rule:Block = List<Rule:Statement>
-Rule:Statement = Rule:Declaration Token:EOI
-Rule:Statement = Rule:Assignment Token:EOI
+Block = List Statement
+Statement = VariableDeclaration + EOI
+Statement = FunctionDeclaration + EOI
+Statement = ConditionalBranch + EOI
+Statement = Assignment + EOI
 
-// NODE DECLARATION
-Rule:Declaration = Token:VAR Token:SYMBOL
-Rule:Declaration = Token:VAR Token:SYMBOL Token:EQUAL Rule:Value
+// VARIABLE DECLARATION
+VariableDeclaration = VAR + SYMBOL
+VariableDeclaration = VAR + SYMBOL + ASSIGN + Value
 
-// NODE ASSIGNMENT
-Rule:Assignment = Token:SYMBOL Token:EQUAL Node:Value
+// ASSIGNMENT
+Assignment = SYMBOL + ASSIGN + Value
 
-// NODE VALUE
-Rule:Value = Token:STRING
-Rule:Value = Token:INTEGER
-Rule:Value = Token:FLOAT
-Rule:Value = Token:SYMBOL
+// FUNCTION DECLARATION
+FunctionDeclaration = FUN + SYMBOL + LPAREN + List FunctionArgument + RPAREN + LBRACE + Block + RBRACE
+
+// FUNCTION ARGUMENT
+FunctionArgument = SYMBOL
+FunctionArgument = SYMBOL + COMMA + FunctionArgument
+
+// CONDITIONAL BRANCH
+ConditionalBranch = IF + LPAREN + Condition + RPAREN + LBRACE + Block + RBRACE
+ConditionalBranch = IF + LPAREN + Condition + RPAREN + LBRACE + Block + RBRACE + ELSE + LBRACE + Block + RBRACE
+
+// CONDITION
+Condition = Value + ConditionOperator + Value
+
+// CONDITION OPERATOR
+ConditionOperator = EQUAL
+ConditionOperator = GREATER
+ConditionOperator = LOWER
+ConditionOperator = GREATEREQUAL
+ConditionOperator = LOWEREQUAL
+
+// OPERATION
+Operation = Value + OperationOperator + Value
+
+// OPERATOR
+OperationOperator = ADD
+OperationOperator = SUB
+OperationOperator = MUL
+OperationOperator = DIV
+OperationOperator = MOD
+
+// VALUE
+Value = STRING
+Value = INTEGER
+Value = FLOAT
+Value = SYMBOL
