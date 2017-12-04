@@ -3,6 +3,7 @@ package com.scorsi.horilang
 import com.scorsi.horilang.ast.AssignmentNode
 import com.scorsi.horilang.ast.DeclarationNode
 import com.scorsi.horilang.ast.SymbolNode
+import com.scorsi.horilang.ast.ValueNode
 import com.scorsi.horilang.lexer.LexerRule
 import com.scorsi.horilang.parser.ParserRule
 import com.scorsi.horilang.parser.ParserRuleTree
@@ -75,14 +76,20 @@ class LiveHorilangInterpreter implements Runnable {
         )
         pb.addRule("Assignment", AssignmentNode,
                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL)), Arrays.asList( // SYMBOL
-                        new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.ASSIGN)),
-                                generateValueRule(true) // SYMBOL ASSIGN value
-                        )
+                        new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.ASSIGN)), Arrays.asList(
+                                new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Value")))
+                        ))
                 ))
         )
         pb.addRule("Symbol", SymbolNode,
                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL), true), Arrays.asList())
         )
+        pb.addRule("Value", ValueNode, Arrays.asList(
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.INTEGER), true)),
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.FLOAT), true)),
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.STRING), true)),
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL), true))
+        ))
 
 //        try {
         def parser = pb.build(lb.build(input))
