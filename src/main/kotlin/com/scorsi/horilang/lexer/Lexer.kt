@@ -6,7 +6,7 @@ import com.scorsi.horilang.TokenType
 class Lexer constructor(val input: String, val rules: List<LexerRule>) {
 
     var tokens: MutableList<Token> = mutableListOf()
-    var streamFinished: Boolean = false
+    private var streamFinished: Boolean = false
 
     private var startPos = 0
     private var line = 0
@@ -108,16 +108,26 @@ class Lexer constructor(val input: String, val rules: List<LexerRule>) {
                 else -> nextToken().let { peek(index) }
             }
 
-    fun purge(number: Int): List<Token> =
-            tokens.subList(0, number).let {
+    fun consume(baseLevel: Int, actualLevel: Int): List<Token> =
+            tokens.subList(baseLevel, actualLevel).let {
                 val ret = it.toList()
-                println("Purging: $it")
-                for (i in 0 until number)
-                    tokens.removeAt(0)
+                println("Consuming: $ret")
+                // tokens.removeAll(ret) equivalent :
+                for (i in baseLevel until actualLevel)
+                    tokens.removeAt(baseLevel)
                 println("Remaining: $tokens")
                 ret
             }
 
     fun clear() = tokens.clear()
+
+    fun isStreamFinished(): Boolean =
+            when (streamFinished) {
+                true -> true
+                false -> when {
+                    tokens.size > 0 -> false
+                    else -> nextToken().let { streamFinished }
+                }
+            }
 
 }
