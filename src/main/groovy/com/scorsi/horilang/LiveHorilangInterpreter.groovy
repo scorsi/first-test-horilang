@@ -64,9 +64,6 @@ class LiveHorilangInterpreter implements Runnable {
                         ))
                 ))
         )
-        pb.addRule("Symbol", SymbolNode,
-                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL), true), Arrays.asList())
-        )
         pb.addRule("Value", ValueNode, Arrays.asList(
                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.INTEGER), true)),
                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.FLOAT), true)),
