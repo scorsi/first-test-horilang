@@ -21,7 +21,11 @@ class Parser constructor(val lexer: Lexer, private val info: ParserInfo) {
         return when (match) {
             true -> Pair(null, true)
             false -> when {
-                matchedRule.value.isEnd || matchedRule.children.isEmpty() -> Pair(classToCreate.kotlin.primaryConstructor!!.call().build(lexer.consume(baseLevel, actualLevel), nodes), true)
+                matchedRule.value.isEnd || matchedRule.children.isEmpty() ->
+                    Pair(classToCreate.kotlin.primaryConstructor!!.call().build(lexer.consume(baseLevel, actualLevel), nodes), true).let {
+                        println("Creating: ${it.first}")
+                        it
+                    }
                 else -> Pair(null, false)
             }
         }
@@ -55,44 +59,56 @@ class Parser constructor(val lexer: Lexer, private val info: ParserInfo) {
             when (matchedRule.value.rule.token) {
                 null -> when (matchedRule.value.rule.specialRule) {
                     null -> throw Error()
+                    "Block" -> parseBlock(mutableListOf(), actualLevel - 1, actualLevel).let {
+                        nodes.add(it)
+                        parseTreeNext(classToCreate, matchedRule, baseLevel, actualLevel - 1, nodes)
+                    }
+                    "Statement" -> parseStatement(actualLevel - 1, actualLevel).let {
+                        when (it.first) {
+                            null -> it
+                            else -> {
+                                nodes.add(it.first!!)
+                                parseTreeNext(classToCreate, matchedRule, baseLevel, actualLevel - 1, nodes)
+                            }
+                        }
+                    }
                     else -> parseTreeSpecialRule(classToCreate, matchedRule, baseLevel, actualLevel, nodes)
                 }
                 else -> parseTreeToken(classToCreate, matchedRule, baseLevel, actualLevel, nodes)
             }
 
-    private fun parseStatement(): Node? =
+    private fun parseStatement(baseLevel: Int, actualLevel: Int): Pair<Node?, Boolean> =
             info.rules.filter { info.statements.contains(it.key) }
                     .forEach { rule ->
                         rule.value.second
                                 .forEach { ruleToTest ->
-                                    parseTree(rule.value.first, ruleToTest, 0, 1, mutableListOf()).let {
+                                    parseTree(rule.value.first, ruleToTest, baseLevel, actualLevel, mutableListOf()).let {
                                         if (it.first != null)
-                                            return it.first
+                                            return it
                                     }
                                 }
-                    }.let { throw ParserInstructionNotFound(lexer.tokens) }
+                    }.let { Pair(null, false) }
 
-    private fun createBlock(list: MutableList<Node>): Node = info.block.kotlin.primaryConstructor!!.call().build(lexer.tokens, list)
+    private fun createBlock(statements: MutableList<Node>): Node =
+            info.block.kotlin.primaryConstructor!!.call().build(lexer.tokens, statements)
 
-    private fun parseBlock(list: MutableList<Node>): Node =
+    private fun parseBlock(statements: MutableList<Node>, baseLevel: Int, actualLevel: Int): Node =
             when (lexer.isStreamFinished()) {
-                true -> createBlock(list)
-                false -> parseStatement().let { statement ->
-                    when (statement) {
-                        null -> createBlock(list)
+                true -> createBlock(statements)
+                false -> parseStatement(baseLevel, actualLevel).let { statement ->
+                    when (statement.first) {
+                        null -> createBlock(statements)
                         else -> {
-                            println("Creating: $statement")
-                            list.add(statement)
-                            lexer.peek(1).let { token ->
+                            statements.add(statement.first!!)
+                            lexer.peek(actualLevel).let { token ->
                                 when (token) {
-                                    null -> createBlock(list)
+                                    null -> createBlock(statements)
                                     else -> when (token.type) {
-                                        TokenType.EOF -> createBlock(list)
                                         TokenType.EOI -> {
-                                            lexer.consume(0, 1)
-                                            parseBlock(list)
+                                            lexer.consume(baseLevel, actualLevel)
+                                            parseBlock(statements, baseLevel, actualLevel)
                                         }
-                                        else -> createBlock(list)
+                                        else -> createBlock(statements)
                                     }
                                 }
                             }
@@ -101,6 +117,7 @@ class Parser constructor(val lexer: Lexer, private val info: ParserInfo) {
                 }
             }
 
-    fun parse(): Node = parseBlock(mutableListOf())
+    fun parse(): Node =
+            parseBlock(mutableListOf(), 0, 1)
 
 }

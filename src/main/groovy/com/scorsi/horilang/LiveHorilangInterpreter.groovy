@@ -54,7 +54,7 @@ class LiveHorilangInterpreter implements Runnable {
                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.VAR)), Arrays.asList(
                         new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL), true), Arrays.asList( // VAR SYMBOL
                                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.ASSIGN)), Arrays.asList(
-                                        new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Value")))
+                                        new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Statement")))
                                 ))
                         ))
                 ))
@@ -62,7 +62,7 @@ class LiveHorilangInterpreter implements Runnable {
         pb.addRule("Assignment", VariableAssignment,
                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL)), Arrays.asList(
                         new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.ASSIGN)), Arrays.asList(
-                                new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Value")))
+                                new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Statement")))
                         ))
                 ))
         )
@@ -75,6 +75,7 @@ class LiveHorilangInterpreter implements Runnable {
 
         pb.registerStatement("Assignment")
         pb.registerStatement("Declaration")
+        pb.registerStatement("Value")
 
         pb.registerBlockNode(Block)
 
