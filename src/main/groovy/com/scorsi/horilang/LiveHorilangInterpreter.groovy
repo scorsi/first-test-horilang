@@ -2,7 +2,7 @@ package com.scorsi.horilang
 
 import com.scorsi.horilang.ast.AssignmentNode
 import com.scorsi.horilang.ast.DeclarationNode
-import com.scorsi.horilang.ast.SymbolNode
+
 import com.scorsi.horilang.ast.ValueNode
 import com.scorsi.horilang.lexer.LexerRule
 import com.scorsi.horilang.parser.ParserRule
@@ -25,6 +25,7 @@ class LiveHorilangInterpreter implements Runnable {
         def lb = new LexerBuilder()
 
         lb.addRule(new LexerRule(TokenType.VAR, /var/))
+        lb.addRule(new LexerRule(TokenType.IF, /if/))
         lb.addRule(new LexerRule(TokenType.SYMBOL, /[a-z]+/))
         lb.addRule(new LexerRule(TokenType.FLOAT, /([0-9]+\.[0-9]*)|([0-9]*\.[0-9]+)/))
         lb.addRule(new LexerRule(TokenType.INTEGER, /[0-9]+/))
