@@ -1,6 +1,8 @@
 package com.scorsi.horilang
 
 import com.scorsi.horilang.ast.Block
+import com.scorsi.horilang.ast.Expression
+import com.scorsi.horilang.ast.Operator
 import com.scorsi.horilang.ast.VariableAssignment
 import com.scorsi.horilang.ast.VariableDeclaration
 
@@ -42,6 +44,11 @@ class LiveHorilangInterpreter implements Runnable {
         lb.addRule(new LexerRule(TokenType.GREATEREQUAL, />=/))
         lb.addRule(new LexerRule(TokenType.LOWER, /</))
         lb.addRule(new LexerRule(TokenType.LOWEREQUAL, /<=/))
+        lb.addRule(new LexerRule(TokenType.SUB, /-/))
+        lb.addRule(new LexerRule(TokenType.ADD, /\+/))
+        lb.addRule(new LexerRule(TokenType.MUL, /\*/))
+        lb.addRule(new LexerRule(TokenType.DIV, /\//))
+        lb.addRule(new LexerRule(TokenType.MOD, /%/))
         lb.addRule(new LexerRule(TokenType.EOI, /;+/))
         lb.addRule(new LexerRule(TokenType.EOL, /\n+/))
 
@@ -54,7 +61,7 @@ class LiveHorilangInterpreter implements Runnable {
                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.VAR)), Arrays.asList(
                         new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL), true), Arrays.asList( // VAR SYMBOL
                                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.ASSIGN)), Arrays.asList(
-                                        new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Statement")))
+                                        new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Value")))
                                 ))
                         ))
                 ))
@@ -62,20 +69,49 @@ class LiveHorilangInterpreter implements Runnable {
         pb.addRule("Assignment", VariableAssignment,
                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL)), Arrays.asList(
                         new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.ASSIGN)), Arrays.asList(
-                                new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Statement")))
+                                new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Value")))
                         ))
                 ))
         )
         pb.addRule("Value", Value, Arrays.asList(
-                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.INTEGER), true)),
-                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.FLOAT), true)),
-                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.STRING), true)),
-                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL), true))
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.INTEGER))),
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.FLOAT))),
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.STRING))),
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL)))
+        ))
+        pb.addRule("Expression", Expression, Arrays.asList(
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Value"), true), Arrays.asList(
+                        new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Operator")), Arrays.asList(
+                                new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Expression")))
+                        )),
+                )),
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.LPAREN)), Arrays.asList(
+                        new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Expression")), Arrays.asList(
+                                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.RPAREN), true), Arrays.asList(
+                                        new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Operator")), Arrays.asList(
+                                                new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Expression")))
+                                        ))
+                                ))
+                        ))
+                )),
+        ))
+        pb.addRule("Operator", Operator, Arrays.asList(
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.EQUAL))),
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.GREATER))),
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.LOWER))),
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.GREATEREQUAL))),
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.LOWEREQUAL))),
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SUB))),
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.ADD))),
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.MUL))),
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.DIV))),
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.MOD)))
         ))
 
         pb.registerStatement("Assignment")
         pb.registerStatement("Declaration")
         pb.registerStatement("Value")
+        pb.registerStatement("Expression")
 
         pb.registerBlockNode(Block)
 
