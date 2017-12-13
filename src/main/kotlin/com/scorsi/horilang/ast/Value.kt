@@ -2,7 +2,7 @@ package com.scorsi.horilang.ast
 
 import com.scorsi.horilang.Token
 
-class ValueNode : Node() {
+class Value : Node() {
 
     lateinit var value: String
     lateinit var type: String
@@ -13,6 +13,6 @@ class ValueNode : Node() {
         return this
     }
 
-    override fun toString(): String = "ValueNode(value=$value, type=$type)"
+    override fun toString(): String = "Value(value=$value, type=$type)"
 
 }

@@ -2,16 +2,16 @@ package com.scorsi.horilang.ast
 
 import com.scorsi.horilang.Token
 
-class AssignmentNode : Node() {
+class VariableAssignment : Node() {
 
     lateinit var leftValue: String
-    lateinit var rightValue: ValueNode
+    lateinit var rightValue: Value
 
     override fun build(tokens: List<Token>, nodes: MutableList<Node>): Node {
         nodes.lastOrNull().let {
             when (it) {
                 null -> throw Error()
-                is ValueNode -> this.rightValue = it
+                is Value -> this.rightValue = it
                 else -> throw Error()
             }
         }
@@ -20,5 +20,5 @@ class AssignmentNode : Node() {
         return this
     }
 
-    override fun toString(): String = "AssignmentNode(leftValue=$leftValue, rightValue=$rightValue)"
+    override fun toString(): String = "VariableAssignment(leftValue=$leftValue, rightValue=$rightValue)"
 }

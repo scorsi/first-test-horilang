@@ -2,17 +2,17 @@ package com.scorsi.horilang.ast
 
 import com.scorsi.horilang.Token
 
-class DeclarationNode : Node() {
+class VariableDeclaration : Node() {
 
     lateinit var symbol: String
-    var rightValue: ValueNode? = null
+    var rightValue: Value? = null
 
     override fun build(tokens: List<Token>, nodes: MutableList<Node>): Node {
         this.symbol = tokens[1].value
         if (tokens.size > 2) {
             nodes.lastOrNull().let {
                 when (it) {
-                    is ValueNode -> this.rightValue = it
+                    is Value -> this.rightValue = it
                     else -> throw Error()
                 }
             }
@@ -21,5 +21,5 @@ class DeclarationNode : Node() {
         return this
     }
 
-    override fun toString(): String = "DeclarationNode(symbol=$symbol, rightValue=$rightValue)"
+    override fun toString(): String = "VariableDeclaration(symbol=$symbol, rightValue=$rightValue)"
 }
