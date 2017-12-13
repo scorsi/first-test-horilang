@@ -61,6 +61,7 @@ class LiveHorilangInterpreter implements Runnable {
                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.VAR)), Arrays.asList(
                         new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL), true), Arrays.asList( // VAR SYMBOL
                                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.ASSIGN)), Arrays.asList(
+                                        new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Expression"))),
                                         new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Value")))
                                 ))
                         ))
@@ -69,6 +70,7 @@ class LiveHorilangInterpreter implements Runnable {
         pb.addRule("Assignment", VariableAssignment,
                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL)), Arrays.asList(
                         new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.ASSIGN)), Arrays.asList(
+                                new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Expression"))),
                                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Value")))
                         ))
                 ))
@@ -117,8 +119,8 @@ class LiveHorilangInterpreter implements Runnable {
 
 //        try {
         def parser = pb.build(lb.build(input))
-        println("Returned: " + parser.parse())
-        println("Remaining: " + parser.lexer.tokens)
+        def node = parser.parse()
+        println("Returned: " + node)
 //        } catch (Error e) {
 //            println(e.toString())
 //        }

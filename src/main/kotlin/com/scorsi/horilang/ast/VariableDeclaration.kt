@@ -11,9 +11,10 @@ class VariableDeclaration : Node() {
         this.symbol = tokens[1].value
         if (tokens.size > 2) {
             nodes.lastOrNull().let {
-                when (it) {
-                    is Value -> this.rightValue = it
-                    else -> throw RuntimeException("Unexpected parameter, wanted [Value] but got $it")
+                this.rightValue = when (it) {
+                    is Value -> it
+                    is Expression -> it
+                    else -> throw RuntimeException("Unexpected parameter, wanted [Value, Expression] but got $it")
                 }
             }
             nodes.removeAt(nodes.lastIndex)

@@ -9,9 +9,10 @@ class VariableAssignment : Node() {
 
     override fun build(tokens: List<Token>, nodes: MutableList<Node>): Node {
         nodes.lastOrNull().let {
-            when (it) {
-                is Value -> this.rightValue = it
-                else -> throw RuntimeException("Unexpected parameter, wanted [Value] but got $it")
+            this.rightValue = when (it) {
+                is Value -> it
+                is Expression -> it
+                else -> throw RuntimeException("Unexpected parameter, wanted [Value, Expression] but got $it")
             }
         }
         nodes.removeAt(nodes.lastIndex)
