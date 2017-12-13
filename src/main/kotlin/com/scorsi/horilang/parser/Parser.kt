@@ -117,7 +117,13 @@ class Parser constructor(val lexer: Lexer, private val info: ParserInfo) {
                 }
             }
 
-    fun parse(): Node =
-            parseBlock(mutableListOf(), 0, 1)
+    fun parse(): Node {
+        val node = parseBlock(mutableListOf(), 0, 1)
+        lexer.nextToken()
+        if (!lexer.tokens.isEmpty()) {
+            throw RuntimeException("Unmatched tokens ${lexer.tokens.joinToString()}")
+        }
+        return node
+    }
 
 }
