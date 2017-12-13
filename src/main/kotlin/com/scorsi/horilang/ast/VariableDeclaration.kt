@@ -5,7 +5,7 @@ import com.scorsi.horilang.Token
 class VariableDeclaration : Node() {
 
     lateinit var symbol: String
-    var rightValue: Value? = null
+    var rightValue: Node? = null
 
     override fun build(tokens: List<Token>, nodes: MutableList<Node>): Node {
         this.symbol = tokens[1].value
@@ -13,10 +13,10 @@ class VariableDeclaration : Node() {
             nodes.lastOrNull().let {
                 when (it) {
                     is Value -> this.rightValue = it
-                    else -> throw Error()
+                    else -> throw RuntimeException("Unexpected parameter, wanted [Value] but got $it")
                 }
             }
-            nodes.dropLast(1)
+            nodes.removeAt(nodes.lastIndex)
         }
         return this
     }
