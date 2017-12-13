@@ -17,23 +17,6 @@ class LiveHorilangInterpreter implements Runnable {
         this.input = input
     }
 
-    static List<ParserRuleTree> generateValueRule(ArrayList<ParserRuleTree> nextRule) {
-        return generateValueRule(false, nextRule)
-    }
-
-    static List<ParserRuleTree> generateValueRule(Boolean isEnd) {
-        return generateValueRule(isEnd, new ArrayList<ParserRuleTree>())
-    }
-
-    static List<ParserRuleTree> generateValueRule(Boolean isEnd, ArrayList<ParserRuleTree> nextRule) {
-        return Arrays.asList(
-                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.INTEGER), isEnd), nextRule),
-                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.FLOAT), isEnd), nextRule),
-                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.STRING), isEnd), nextRule),
-                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL), isEnd), nextRule)
-        )
-    }
-
     @Override
     void run() {
         /**
@@ -68,14 +51,14 @@ class LiveHorilangInterpreter implements Runnable {
         pb.addRule("Declaration", DeclarationNode,
                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.VAR)), Arrays.asList(
                         new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL), true), Arrays.asList( // VAR SYMBOL
-                                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.ASSIGN)),
-                                        generateValueRule(true) // VAR SYMBOL EQUAL value
-                                )
+                                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.ASSIGN)), Arrays.asList(
+                                        new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Value")))
+                                ))
                         ))
                 ))
         )
         pb.addRule("Assignment", AssignmentNode,
-                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL)), Arrays.asList( // SYMBOL
+                new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL)), Arrays.asList(
                         new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.ASSIGN)), Arrays.asList(
                                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Value")))
                         ))

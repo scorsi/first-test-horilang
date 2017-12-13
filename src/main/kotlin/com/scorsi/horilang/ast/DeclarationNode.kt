@@ -5,19 +5,24 @@ import com.scorsi.horilang.Token
 class DeclarationNode : Node() {
 
     lateinit var symbol: String
-    var value: String? = null
-    var type: String? = null
+    var rightValue: ValueNode? = null
 
-    override fun build(tokens: List<Token>): Node {
+    override fun build(tokens: List<Token>, nodes: MutableList<Node>): Node {
         symbol = tokens[1].value
         if (tokens.size > 2) {
-            value = tokens[3].value
-            type = tokens[3].type.toString().toLowerCase().capitalize()
+            nodes.lastOrNull().let {
+                when (it) {
+                    null -> throw Error()
+                    is ValueNode -> rightValue = it
+                    else -> throw Error()
+                }
+            }
+            nodes.dropLast(1)
         }
         return this
     }
 
     override fun toString(): String {
-        return "DeclarationNode(symbol=$symbol, type=$type, value=$value)"
+        return "DeclarationNode(symbol=$symbol, rightValue=$rightValue)"
     }
 }

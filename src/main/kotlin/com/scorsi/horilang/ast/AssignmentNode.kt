@@ -5,18 +5,24 @@ import com.scorsi.horilang.Token
 class AssignmentNode : Node() {
 
     lateinit var leftValue: String
-    lateinit var rightValue: String
-    lateinit var rightValueType: String
+    lateinit var rightValue: ValueNode
 
-    override fun build(tokens: List<Token>): Node {
+    override fun build(tokens: List<Token>, nodes: MutableList<Node>): Node {
+        nodes.lastOrNull().let {
+            when (it) {
+                null -> throw Error()
+                is ValueNode -> rightValue = it
+                else -> throw Error()
+            }
+        }
+        nodes.dropLast(1)
+
         leftValue = tokens[0].value
-        rightValue = tokens[2].value
-        rightValueType = tokens[2].type.toString().toLowerCase().capitalize()
 
         return this
     }
 
     override fun toString(): String {
-        return "AssignmentNode(leftValue=$leftValue, rightValue=$rightValue, rightValueType=$rightValueType)"
+        return "AssignmentNode(leftValue=$leftValue, rightValue=$rightValue)"
     }
 }

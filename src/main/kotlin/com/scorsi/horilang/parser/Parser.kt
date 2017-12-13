@@ -7,7 +7,7 @@ import kotlin.reflect.full.primaryConstructor
 
 class Parser constructor(val lexer: Lexer, private val rules: Map<String, Pair<Class<Node>, ArrayList<ParserRuleTree<ParserRuleContainer>>>>) {
 
-    private fun parseTreeToken(classToCreate: Class<Node>, matchedRule: ParserRuleTree<ParserRuleContainer>, baseLevel: Int, actualLevel: Int): Pair<Node?, Boolean> =
+    private fun parseTreeToken(classToCreate: Class<Node>, matchedRule: ParserRuleTree<ParserRuleContainer>, baseLevel: Int, actualLevel: Int, nodes: MutableList<Node>): Pair<Node?, Boolean> =
             lexer.peek(actualLevel).let { actualToken ->
                 when (actualToken) {
                     null -> Pair(null, false)
@@ -16,7 +16,7 @@ class Parser constructor(val lexer: Lexer, private val rules: Map<String, Pair<C
                             var match = false
                             matchedRule.children
                                     .forEach { rule ->
-                                        parseTree(classToCreate, rule, baseLevel, actualLevel + 1).let {
+                                        parseTree(classToCreate, rule, baseLevel, actualLevel + 1, nodes).let {
                                             if (it.second)
                                                 match = true
                                             if (it.first != null)
@@ -26,7 +26,7 @@ class Parser constructor(val lexer: Lexer, private val rules: Map<String, Pair<C
                             when (match) {
                                 true -> Pair(null, true)
                                 false -> when (matchedRule.value.isEnd) {
-                                    true -> Pair(classToCreate.kotlin.primaryConstructor!!.call().build(lexer.consume(baseLevel, actualLevel)), true)
+                                    true -> Pair(classToCreate.kotlin.primaryConstructor!!.call().build(lexer.consume(baseLevel, actualLevel), nodes), true)
                                     false -> Pair(null, true)
                                 }
                             }
@@ -36,7 +36,7 @@ class Parser constructor(val lexer: Lexer, private val rules: Map<String, Pair<C
                 }
             }
 
-    private fun parseTree(classToCreate: Class<Node>, matchedRule: ParserRuleTree<ParserRuleContainer>, baseLevel: Int, actualLevel: Int): Pair<Node?, Boolean> =
+    private fun parseTree(classToCreate: Class<Node>, matchedRule: ParserRuleTree<ParserRuleContainer>, baseLevel: Int, actualLevel: Int, nodes: MutableList<Node>): Pair<Node?, Boolean> =
             when (matchedRule.value.rule.token) {
                 null -> when (matchedRule.value.rule.specialRule) {
                     null -> throw Error()
@@ -45,10 +45,10 @@ class Parser constructor(val lexer: Lexer, private val rules: Map<String, Pair<C
                         rules.filter { it.key == matchedRule.value.rule.specialRule }
                                 .forEach { rule ->
                                     rule.value.second.forEach { ruleToTest ->
-                                        parseTree(rule.value.first, ruleToTest, actualLevel - 1, actualLevel).let {
+                                        parseTree(rule.value.first, ruleToTest, actualLevel - 1, actualLevel, nodes).let {
                                             if (it.first != null) {
-                                                println("Special Rule matched")
-                                                return it
+                                                nodes.add(it.first!!)
+                                                return Pair(classToCreate.kotlin.primaryConstructor!!.call().build(lexer.consume(baseLevel, actualLevel - 1), nodes), true)
                                             }
                                         }
                                     }
@@ -57,7 +57,7 @@ class Parser constructor(val lexer: Lexer, private val rules: Map<String, Pair<C
                 }
                 else -> {
                     println("Parse with Token")
-                    parseTreeToken(classToCreate, matchedRule, baseLevel, actualLevel)
+                    parseTreeToken(classToCreate, matchedRule, baseLevel, actualLevel, nodes)
                 }
             }
 
@@ -65,7 +65,7 @@ class Parser constructor(val lexer: Lexer, private val rules: Map<String, Pair<C
             rules.forEach { rule ->
                 rule.value.second
                         .forEach { ruleToTest ->
-                            parseTree(rule.value.first, ruleToTest, 0, 1).let {
+                            parseTree(rule.value.first, ruleToTest, 0, 1, mutableListOf()).let {
                                 if (it.first != null)
                                     return it.first
                             }

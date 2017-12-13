@@ -6,7 +6,7 @@ class SymbolNode : Node() {
 
     lateinit var symbol: String
 
-    override fun build(tokens: List<Token>): Node {
+    override fun build(tokens: List<Token>, nodes: MutableList<Node>): Node {
         symbol = tokens[0].value
 
         return this

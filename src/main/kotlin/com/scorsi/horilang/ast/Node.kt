@@ -4,6 +4,6 @@ import com.scorsi.horilang.Token
 
 abstract class Node {
 
-    abstract fun build(tokens: List<Token>): Node
+    abstract fun build(tokens: List<Token>, nodes: MutableList<Node>): Node
 
 }
