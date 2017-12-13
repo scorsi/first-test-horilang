@@ -1,9 +1,10 @@
 package com.scorsi.horilang
 
-import com.scorsi.horilang.ast.AssignmentNode
-import com.scorsi.horilang.ast.DeclarationNode
+import com.scorsi.horilang.ast.Block
+import com.scorsi.horilang.ast.VariableAssignment
+import com.scorsi.horilang.ast.VariableDeclaration
 
-import com.scorsi.horilang.ast.ValueNode
+import com.scorsi.horilang.ast.Value
 import com.scorsi.horilang.lexer.LexerRule
 import com.scorsi.horilang.parser.ParserRule
 import com.scorsi.horilang.parser.ParserRuleTree
@@ -49,7 +50,7 @@ class LiveHorilangInterpreter implements Runnable {
          */
         def pb = new ParserBuilder()
 
-        pb.addRule("Declaration", DeclarationNode,
+        pb.addRule("Declaration", VariableDeclaration,
                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.VAR)), Arrays.asList(
                         new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL), true), Arrays.asList( // VAR SYMBOL
                                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.ASSIGN)), Arrays.asList(
@@ -58,19 +59,24 @@ class LiveHorilangInterpreter implements Runnable {
                         ))
                 ))
         )
-        pb.addRule("Assignment", AssignmentNode,
+        pb.addRule("Assignment", VariableAssignment,
                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL)), Arrays.asList(
                         new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.ASSIGN)), Arrays.asList(
                                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Value")))
                         ))
                 ))
         )
-        pb.addRule("Value", ValueNode, Arrays.asList(
+        pb.addRule("Value", Value, Arrays.asList(
                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.INTEGER), true)),
                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.FLOAT), true)),
                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.STRING), true)),
                 new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL), true))
         ))
+
+        pb.registerStatement("Assignment")
+        pb.registerStatement("Declaration")
+
+        pb.registerBlockNode(Block)
 
 //        try {
         def parser = pb.build(lb.build(input))

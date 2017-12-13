@@ -5,7 +5,7 @@ import com.scorsi.horilang.ast.Node
 import com.scorsi.horilang.lexer.Lexer
 import kotlin.reflect.full.primaryConstructor
 
-class Parser constructor(val lexer: Lexer, private val rules: Map<String, Pair<Class<Node>, ArrayList<ParserRuleTree<ParserRuleContainer>>>>) {
+class Parser constructor(val lexer: Lexer, private val info: ParserInfo) {
 
     private fun parseTreeNext(classToCreate: Class<Node>, matchedRule: ParserRuleTree<ParserRuleContainer>, baseLevel: Int, actualLevel: Int, nodes: MutableList<Node>): Pair<Node?, Boolean> {
         var match = false
@@ -39,7 +39,7 @@ class Parser constructor(val lexer: Lexer, private val rules: Map<String, Pair<C
             }
 
     private fun parseTreeSpecialRule(classToCreate: Class<Node>, matchedRule: ParserRuleTree<ParserRuleContainer>, baseLevel: Int, actualLevel: Int, nodes: MutableList<Node>): Pair<Node?, Boolean> =
-            rules.filter { it.key == matchedRule.value.rule.specialRule }
+            info.rules.filter { it.key == matchedRule.value.rule.specialRule }
                     .forEach { rule ->
                         rule.value.second.forEach { ruleToTest ->
                             parseTree(rule.value.first, ruleToTest, actualLevel - 1, actualLevel, nodes).let {
@@ -61,35 +61,38 @@ class Parser constructor(val lexer: Lexer, private val rules: Map<String, Pair<C
             }
 
     private fun parseStatement(): Node? =
-            rules.forEach { rule ->
-                rule.value.second
-                        .forEach { ruleToTest ->
-                            parseTree(rule.value.first, ruleToTest, 0, 1, mutableListOf()).let {
-                                if (it.first != null)
-                                    return it.first
-                            }
-                        }
-            }.let { throw ParserInstructionNotFound(lexer.tokens) }
+            info.rules.filter { info.statements.contains(it.key) }
+                    .forEach { rule ->
+                        rule.value.second
+                                .forEach { ruleToTest ->
+                                    parseTree(rule.value.first, ruleToTest, 0, 1, mutableListOf()).let {
+                                        if (it.first != null)
+                                            return it.first
+                                    }
+                                }
+                    }.let { throw ParserInstructionNotFound(lexer.tokens) }
 
-    private fun parseBlock(list: MutableList<Node>): List<Node> =
+    private fun createBlock(list: MutableList<Node>): Node = info.block.kotlin.primaryConstructor!!.call().build(lexer.tokens, list)
+
+    private fun parseBlock(list: MutableList<Node>): Node =
             when (lexer.isStreamFinished()) {
-                true -> list
+                true -> createBlock(list)
                 false -> parseStatement().let { statement ->
                     when (statement) {
-                        null -> list
+                        null -> createBlock(list)
                         else -> {
                             println("Creating: $statement")
                             list.add(statement)
                             lexer.peek(1).let { token ->
                                 when (token) {
-                                    null -> list
+                                    null -> createBlock(list)
                                     else -> when (token.type) {
-                                        TokenType.EOF -> list
+                                        TokenType.EOF -> createBlock(list)
                                         TokenType.EOI -> {
                                             lexer.consume(0, 1)
                                             parseBlock(list)
                                         }
-                                        else -> list
+                                        else -> createBlock(list)
                                     }
                                 }
                             }
@@ -98,6 +101,6 @@ class Parser constructor(val lexer: Lexer, private val rules: Map<String, Pair<C
                 }
             }
 
-    fun parse(): List<Node> = parseBlock(mutableListOf())
+    fun parse(): Node = parseBlock(mutableListOf())
 
 }

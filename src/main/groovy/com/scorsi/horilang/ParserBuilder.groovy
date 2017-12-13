@@ -1,13 +1,16 @@
 package com.scorsi.horilang
 
 import com.scorsi.horilang.lexer.Lexer
+import com.scorsi.horilang.parser.ParserInfo
 import com.scorsi.horilang.parser.ParserRuleTree
 import com.scorsi.horilang.parser.Parser
 import kotlin.Pair
 
 class ParserBuilder {
 
-    Map<String, Pair<Class, List<ParserRuleTree>>> rules = new HashMap<>()
+    private Map<String, Pair<Class, List<ParserRuleTree>>> rules = new HashMap<>()
+    private List<String> statements = new ArrayList<>()
+    private Class blockClass = null
 
     ParserBuilder() {
     }
@@ -24,8 +27,16 @@ class ParserBuilder {
         rules[key].second.addAll(rule)
     }
 
+    void registerBlockNode(Class blockClass) {
+        this.blockClass = blockClass
+    }
+
+    void registerStatement(String statement) {
+        this.statements.push(statement)
+    }
+
     Parser build(Lexer lexer) {
-        return new Parser(lexer, rules)
+        return new Parser(lexer, new ParserInfo(rules, statements, blockClass))
     }
 
 }
