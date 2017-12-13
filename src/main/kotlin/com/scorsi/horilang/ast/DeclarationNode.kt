@@ -8,12 +8,11 @@ class DeclarationNode : Node() {
     var rightValue: ValueNode? = null
 
     override fun build(tokens: List<Token>, nodes: MutableList<Node>): Node {
-        symbol = tokens[1].value
+        this.symbol = tokens[1].value
         if (tokens.size > 2) {
             nodes.lastOrNull().let {
                 when (it) {
-                    null -> throw Error()
-                    is ValueNode -> rightValue = it
+                    is ValueNode -> this.rightValue = it
                     else -> throw Error()
                 }
             }
@@ -22,7 +21,5 @@ class DeclarationNode : Node() {
         return this
     }
 
-    override fun toString(): String {
-        return "DeclarationNode(symbol=$symbol, rightValue=$rightValue)"
-    }
+    override fun toString(): String = "DeclarationNode(symbol=$symbol, rightValue=$rightValue)"
 }

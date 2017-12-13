@@ -20,12 +20,9 @@ class Parser constructor(val lexer: Lexer, private val rules: Map<String, Pair<C
                 }
         return when (match) {
             true -> Pair(null, true)
-            false -> when (matchedRule.value.isEnd) {
-                true -> Pair(classToCreate.kotlin.primaryConstructor!!.call().build(lexer.consume(baseLevel, actualLevel), nodes), true)
-                false -> when (matchedRule.children.size) {
-                    0 -> Pair(classToCreate.kotlin.primaryConstructor!!.call().build(lexer.consume(baseLevel, actualLevel), nodes), true)
-                    else -> Pair(null, false)
-                }
+            false -> when {
+                matchedRule.value.isEnd || matchedRule.children.isEmpty() -> Pair(classToCreate.kotlin.primaryConstructor!!.call().build(lexer.consume(baseLevel, actualLevel), nodes), true)
+                else -> Pair(null, false)
             }
         }
     }

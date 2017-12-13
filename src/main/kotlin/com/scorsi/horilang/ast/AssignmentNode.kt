@@ -11,18 +11,14 @@ class AssignmentNode : Node() {
         nodes.lastOrNull().let {
             when (it) {
                 null -> throw Error()
-                is ValueNode -> rightValue = it
+                is ValueNode -> this.rightValue = it
                 else -> throw Error()
             }
         }
         nodes.dropLast(1)
-
-        leftValue = tokens[0].value
-
+        this.leftValue = tokens[0].value
         return this
     }
 
-    override fun toString(): String {
-        return "AssignmentNode(leftValue=$leftValue, rightValue=$rightValue)"
-    }
+    override fun toString(): String = "AssignmentNode(leftValue=$leftValue, rightValue=$rightValue)"
 }
