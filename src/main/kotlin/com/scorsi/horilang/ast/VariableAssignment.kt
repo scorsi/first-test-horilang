@@ -21,4 +21,5 @@ class VariableAssignment : Node() {
     }
 
     override fun toString(): String = "VariableAssignment(leftValue=$leftValue, rightValue=$rightValue)"
+
 }

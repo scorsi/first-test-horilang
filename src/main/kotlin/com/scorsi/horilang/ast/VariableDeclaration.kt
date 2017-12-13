@@ -22,4 +22,5 @@ class VariableDeclaration : Node() {
     }
 
     override fun toString(): String = "VariableDeclaration(symbol=$symbol, rightValue=$rightValue)"
+
 }
