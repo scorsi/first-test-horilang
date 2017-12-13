@@ -7,58 +7,60 @@ import kotlin.reflect.full.primaryConstructor
 
 class Parser constructor(val lexer: Lexer, private val rules: Map<String, Pair<Class<Node>, ArrayList<ParserRuleTree<ParserRuleContainer>>>>) {
 
+    private fun parseTreeNext(classToCreate: Class<Node>, matchedRule: ParserRuleTree<ParserRuleContainer>, baseLevel: Int, actualLevel: Int, nodes: MutableList<Node>): Pair<Node?, Boolean> {
+        var match = false
+        matchedRule.children
+                .forEach { rule ->
+                    parseTree(classToCreate, rule, baseLevel, actualLevel + 1, nodes).let {
+                        if (it.second)
+                            match = true
+                        if (it.first != null)
+                            return it
+                    }
+                }
+        return when (match) {
+            true -> Pair(null, true)
+            false -> when (matchedRule.value.isEnd) {
+                true -> Pair(classToCreate.kotlin.primaryConstructor!!.call().build(lexer.consume(baseLevel, actualLevel), nodes), true)
+                false -> when (matchedRule.children.size) {
+                    0 -> Pair(classToCreate.kotlin.primaryConstructor!!.call().build(lexer.consume(baseLevel, actualLevel), nodes), true)
+                    else -> Pair(null, false)
+                }
+            }
+        }
+    }
+
     private fun parseTreeToken(classToCreate: Class<Node>, matchedRule: ParserRuleTree<ParserRuleContainer>, baseLevel: Int, actualLevel: Int, nodes: MutableList<Node>): Pair<Node?, Boolean> =
             lexer.peek(actualLevel).let { actualToken ->
                 when (actualToken) {
                     null -> Pair(null, false)
                     else -> when {
-                        actualToken.type == matchedRule.value.rule.token -> {
-                            var match = false
-                            matchedRule.children
-                                    .forEach { rule ->
-                                        parseTree(classToCreate, rule, baseLevel, actualLevel + 1, nodes).let {
-                                            if (it.second)
-                                                match = true
-                                            if (it.first != null)
-                                                return it
-                                        }
-                                    }
-                            when (match) {
-                                true -> Pair(null, true)
-                                false -> when (matchedRule.value.isEnd) {
-                                    true -> Pair(classToCreate.kotlin.primaryConstructor!!.call().build(lexer.consume(baseLevel, actualLevel), nodes), true)
-                                    false -> Pair(null, true)
-                                }
-                            }
-                        }
+                        actualToken.type == matchedRule.value.rule.token -> parseTreeNext(classToCreate, matchedRule, baseLevel, actualLevel, nodes)
                         else -> Pair(null, false)
                     }
                 }
             }
 
+    private fun parseTreeSpecialRule(classToCreate: Class<Node>, matchedRule: ParserRuleTree<ParserRuleContainer>, baseLevel: Int, actualLevel: Int, nodes: MutableList<Node>): Pair<Node?, Boolean> =
+            rules.filter { it.key == matchedRule.value.rule.specialRule }
+                    .forEach { rule ->
+                        rule.value.second.forEach { ruleToTest ->
+                            parseTree(rule.value.first, ruleToTest, actualLevel - 1, actualLevel, nodes).let {
+                                if (it.first != null) {
+                                    nodes.add(it.first!!)
+                                    return parseTreeNext(classToCreate, matchedRule, baseLevel, actualLevel - 1, nodes)
+                                }
+                            }
+                        }
+                    }.let { Pair(null, false) }
+
     private fun parseTree(classToCreate: Class<Node>, matchedRule: ParserRuleTree<ParserRuleContainer>, baseLevel: Int, actualLevel: Int, nodes: MutableList<Node>): Pair<Node?, Boolean> =
             when (matchedRule.value.rule.token) {
                 null -> when (matchedRule.value.rule.specialRule) {
                     null -> throw Error()
-                    else -> {
-                        println("Parse with Special Rule")
-                        rules.filter { it.key == matchedRule.value.rule.specialRule }
-                                .forEach { rule ->
-                                    rule.value.second.forEach { ruleToTest ->
-                                        parseTree(rule.value.first, ruleToTest, actualLevel - 1, actualLevel, nodes).let {
-                                            if (it.first != null) {
-                                                nodes.add(it.first!!)
-                                                return Pair(classToCreate.kotlin.primaryConstructor!!.call().build(lexer.consume(baseLevel, actualLevel - 1), nodes), true)
-                                            }
-                                        }
-                                    }
-                                }.let { Pair(null, false) }
-                    }
+                    else -> parseTreeSpecialRule(classToCreate, matchedRule, baseLevel, actualLevel, nodes)
                 }
-                else -> {
-                    println("Parse with Token")
-                    parseTreeToken(classToCreate, matchedRule, baseLevel, actualLevel, nodes)
-                }
+                else -> parseTreeToken(classToCreate, matchedRule, baseLevel, actualLevel, nodes)
             }
 
     private fun parseStatement(): Node? =
