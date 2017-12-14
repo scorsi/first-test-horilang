@@ -70,8 +70,8 @@ global func test5 : var Integer = 5
 global type B : A                    // B heriting from A (alias of testA.A)
 {
     // var and val have to be assigned !
-    val name { export get } : String        // Inited in the constructor
-    var counter : Integer                   // Inited in the init func
+    val name { export get } : String        // Initialized in the constructor
+    var counter : Integer                   // Initialized in the init func
     
     constructor (name : String) : A()       // The constructor which call the parent constructor
     
