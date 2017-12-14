@@ -1,7 +1,6 @@
 package com.scorsi.horilang.ast
 
 import com.scorsi.horilang.Token
-import groovy.transform.Canonical
 import groovy.transform.ToString
 import org.jetbrains.annotations.NotNull
 
