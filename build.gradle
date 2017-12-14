@@ -10,11 +10,10 @@ buildscript {
     }
 }
 
-group 'com.scorsi'
+group 'horilang'
 version '0.1-alpha'
 
 apply plugin: 'kotlin'
-apply plugin: 'groovy'
 apply plugin: 'application'
 
 mainClassName = "horilang.Main"
@@ -56,7 +55,7 @@ compileTestKotlin {
 }
 
 jar {
-    baseName = "horilang"
+    baseName = "parser"
     manifest {
         attributes (
                 "Class-Path" : configurations.compile.collect { it.getName() }.join(' '),
