@@ -1,1 +1,3 @@
-rootProject.name = 'horilang-parser'
+rootProject.name = 'horilang'
+include('parser')
+include('parsernodes')
