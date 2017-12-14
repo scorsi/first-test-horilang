@@ -30,14 +30,25 @@ enum class TokenType {
     EQUAL,                  // IS EQUAL TO
     GREATER,                // IS GREATER TO
     LOWER,                  // IS LOWER TO
-    GREATEREQUAL,           // IS GREATER OR EQUAL TO
-    LOWEREQUAL,             // IS LOWER OR EQUAL TO
+    GREATER_EQUAL,          // IS GREATER OR EQUAL TO
+    LOWER_EQUAL,            // IS LOWER OR EQUAL TO
 
     SUB,                    // SUBSTRACTION
     ADD,                    // ADDITION
     MUL,                    // MULTIPLICATION
     DIV,                    // DIVISION
     MOD,                    // MODULO
+
+    BINARY_AND,             // "&"
+    BINARY_OR,              // "|"
+    BINARY_XOR,             // "^"
+    BINARY_NOT,             // "~"
+    BINARY_LEFT_SHIFT,      // "<<"
+    BINARY_RIGHT_SHIFT,     // ">>"
+
+    LOGICAL_NOT,            // "!"
+    LOGICAL_AND,            // "&&"
+    LOGICAL_OR,             // "||"
 
     // END OF ....
     EOI,                    // END OF INSTRUCTION

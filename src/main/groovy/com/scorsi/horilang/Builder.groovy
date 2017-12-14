@@ -17,9 +17,9 @@ import kotlin.Pair
 
 class Builder {
 
-    private static ArrayList<LexerRule> lexerRules = new ArrayList<>()
-    private static Map<String, Pair<Class, List<ParserRuleTree>>> parserRules = new HashMap<>()
-    private static List<String> statements = new ArrayList<>()
+    private static List<LexerRule> lexerRules = new LinkedList<>()
+    private static Map<String, Pair<Class, List<ParserRuleTree>>> parserRules = new LinkedHashMap<>()
+    private static List<String> statements = new LinkedList<>()
     private static Class blockClass = null
 
     private static Boolean isInitialized = false
@@ -30,13 +30,13 @@ class Builder {
 
     private static void addParserRule(String key, Class c, ParserRuleTree rule) {
         if (parserRules[key] == null)
-            parserRules[key] = new Pair<>(c, new ArrayList<>())
+            parserRules[key] = new Pair<>(c, new LinkedList<>())
         parserRules[key].second.add(rule)
     }
 
     private static void addParserRule(String key, Class c, List<ParserRuleTree> rule) {
         if (parserRules[key] == null)
-            parserRules[key] = new Pair<>(c, new ArrayList<>())
+            parserRules[key] = new Pair<>(c, new LinkedList<>())
         parserRules[key].second.addAll(rule)
     }
 
@@ -68,14 +68,23 @@ class Builder {
             addLexerRule(new LexerRule(TokenType.ASSIGN, /\=/))
             addLexerRule(new LexerRule(TokenType.EQUAL, /\==/))
             addLexerRule(new LexerRule(TokenType.GREATER, />/))
-            addLexerRule(new LexerRule(TokenType.GREATEREQUAL, />=/))
+            addLexerRule(new LexerRule(TokenType.GREATER_EQUAL, />=/))
             addLexerRule(new LexerRule(TokenType.LOWER, /</))
-            addLexerRule(new LexerRule(TokenType.LOWEREQUAL, /<=/))
+            addLexerRule(new LexerRule(TokenType.LOWER_EQUAL, /<=/))
             addLexerRule(new LexerRule(TokenType.SUB, /-/))
             addLexerRule(new LexerRule(TokenType.ADD, /\+/))
             addLexerRule(new LexerRule(TokenType.MUL, /\*/))
             addLexerRule(new LexerRule(TokenType.DIV, /\//))
             addLexerRule(new LexerRule(TokenType.MOD, /%/))
+            addLexerRule(new LexerRule(TokenType.BINARY_AND, /&/))
+            addLexerRule(new LexerRule(TokenType.BINARY_OR, /\|/))
+            addLexerRule(new LexerRule(TokenType.BINARY_XOR, /^/))
+            addLexerRule(new LexerRule(TokenType.BINARY_NOT, /~/))
+            addLexerRule(new LexerRule(TokenType.BINARY_LEFT_SHIFT, /<</))
+            addLexerRule(new LexerRule(TokenType.BINARY_RIGHT_SHIFT, />>/))
+            addLexerRule(new LexerRule(TokenType.LOGICAL_NOT, /!/))
+            addLexerRule(new LexerRule(TokenType.LOGICAL_AND, /&&/))
+            addLexerRule(new LexerRule(TokenType.LOGICAL_OR, /||/))
             addLexerRule(new LexerRule(TokenType.EOI, /;+/))
             addLexerRule(new LexerRule(TokenType.EOL, /\n+/))
 
@@ -104,7 +113,12 @@ class Builder {
                     new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.INTEGER))),
                     new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.FLOAT))),
                     new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.STRING))),
-                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL)))
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "SignOperator")), Arrays.asList(
+                            new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.INTEGER))),
+                            new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.FLOAT))),
+                            new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SYMBOL))),
+                    ))
             ))
             addParserRule("Expression", Expression, Arrays.asList(
                     new ParserRuleTree(new ParserRuleContainer(new ParserRule(specialRule: "Value"), true), Arrays.asList(
@@ -122,17 +136,58 @@ class Builder {
                             ))
                     )),
             ))
+            addParserRule("SignOperator", Operator, Arrays.asList(
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SUB))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.ADD))),
+            ))
+            addParserRule("ConditionOperator", Operator, Arrays.asList(
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.EQUAL))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.GREATER))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.LOWER))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.GREATER_EQUAL))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.LOWER_EQUAL))),
+            ))
+            addParserRule("LowCalcOperator", Operator, Arrays.asList(
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SUB))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.ADD))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.LOGICAL_NOT))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.BINARY_AND))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.BINARY_OR))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.BINARY_XOR))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.BINARY_NOT))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.BINARY_LEFT_SHIFT))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.BINARY_RIGHT_SHIFT))),
+            ))
+            addParserRule("HighCalcOperator", Operator, Arrays.asList(
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.MUL))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.DIV))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.MOD))),
+            ))
+            addParserRule("LogicalOperator", Operator, Arrays.asList(
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.LOGICAL_NOT))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.LOGICAL_AND))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.LOGICAL_OR))),
+            ))
             addParserRule("Operator", Operator, Arrays.asList(
                     new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.EQUAL))),
                     new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.GREATER))),
                     new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.LOWER))),
-                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.GREATEREQUAL))),
-                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.LOWEREQUAL))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.GREATER_EQUAL))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.LOWER_EQUAL))),
                     new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SUB))),
                     new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.ADD))),
                     new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.MUL))),
                     new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.DIV))),
-                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.MOD)))
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.MOD))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.BINARY_AND))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.BINARY_OR))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.BINARY_XOR))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.BINARY_NOT))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.BINARY_LEFT_SHIFT))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.BINARY_RIGHT_SHIFT))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.LOGICAL_NOT))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.LOGICAL_AND))),
+                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.LOGICAL_OR))),
             ))
 
             /**
