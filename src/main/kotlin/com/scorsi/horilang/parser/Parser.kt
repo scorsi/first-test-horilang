@@ -22,7 +22,7 @@ class Parser constructor(val lexer: Lexer, private val info: ParserInfo) {
             true -> Pair(null, true)
             false -> when {
                 matchedRule.value.isEnd || matchedRule.children.isEmpty() ->
-                    Pair(classToCreate.kotlin.primaryConstructor!!.call().build(lexer.consume(baseLevel, actualLevel), nodes), true).let {
+                    Pair(classToCreate.getConstructor().newInstance().build(lexer.consume(baseLevel, actualLevel), nodes), true).let {
                         println("Creating: ${it.first}")
                         it
                     }
@@ -90,7 +90,7 @@ class Parser constructor(val lexer: Lexer, private val info: ParserInfo) {
                     }.let { Pair(null, false) }
 
     private fun createBlock(statements: MutableList<Node>): Node =
-            info.block.kotlin.primaryConstructor!!.call().build(lexer.tokens, statements)
+            info.block.getConstructor().newInstance().build(lexer.tokens, statements)
 
     private fun parseBlock(statements: MutableList<Node>, baseLevel: Int, actualLevel: Int): Node =
             when (lexer.isStreamFinished()) {

@@ -3,10 +3,9 @@ package com.scorsi.horilang
 import com.scorsi.horilang.ast.Block
 import com.scorsi.horilang.ast.Expression
 import com.scorsi.horilang.ast.Operator
+import com.scorsi.horilang.ast.Value
 import com.scorsi.horilang.ast.VariableAssignment
 import com.scorsi.horilang.ast.VariableDeclaration
-
-import com.scorsi.horilang.ast.Value
 import com.scorsi.horilang.lexer.LexerRule
 import com.scorsi.horilang.parser.ParserRule
 import com.scorsi.horilang.parser.ParserRuleTree
