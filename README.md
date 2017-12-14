@@ -67,19 +67,19 @@ global func test4 () : val Integer = 4
 // You can omite "()" if there isn't any parameters
 global func test5 : var Integer = 5
 
-global type B : A                    // B heriting from A (alias of testA.A)
+global type B : A                           // B heriting from A (alias of testA.A)
 {
-    // var and val have to be assigned !
-    val name { export get } : String        // Initialized in the constructor
+    /**
+     * Note: in a type, first should be attribute, then constructor, then init, then destructor, then methods 
+     */
+
+    // Every var and val have to be assigned even in a type
+    val name : String                       // Initialized in the constructor
     var counter : Integer                   // Initialized in the init func
     
     constructor (name : String) : A()       // The constructor which call the parent constructor
     
     init = counter = 0                      // The init function which is called automaticaly after the constructor
-    
-    destructor {                            // Called automatically when no longer used
-        print("Bye bye")
-    }
     
     /**
      * You can type the following if you don't like the multi "=":
@@ -88,6 +88,10 @@ global type B : A                    // B heriting from A (alias of testA.A)
         counter = 0
     }
      */
+    
+    destructor {                            // Called automatically when no longer used
+        print("Bye bye")
+    }
     
     // Private equivalent access to this type
     func addToCounter (val toAdd : Integer) : val Integer =
