@@ -55,19 +55,16 @@ func testFunc3 (var left, val right) : val Integer =
 // This function is only accessible in this file
 func test1 () : var Integer = 1
 
-// This function is only accessible in this module
-local func test2 () : var Integer = 2
-
 // This function is accessible everywhere
-global func test3 () : var Integer = 3
+export func test2 () : var Integer = 2
 
 // You can choose between var and val for the returned value
-global func test4 () : val Integer = 4
+export func test3 () : val Integer = 3
 
 // You can omite "()" if there isn't any parameters
-global func test5 : var Integer = 5
+export func test4 : var Integer = 4
 
-global type B : A                           // B heriting from A (alias of testA.A)
+export type B : A                           // B heriting from A (alias of testA.A)
 {
     /**
      * Note: in a type, first should be attribute, then constructor, then init, then destructor, then methods 
@@ -84,30 +81,34 @@ global type B : A                           // B heriting from A (alias of testA
     /**
      * You can type the following if you don't like the multi "=":
      *
-    init {
-        counter = 0
-    }
+     * init {
+     *     counter = 0
+     * }
      */
     
     destructor {                            // Called automatically when no longer used
         print("Bye bye")
     }
     
-    // Private equivalent access to this type
+    // Accessible only in this type
     func addToCounter (val toAdd : Integer) : val Integer =
         counter + toAdd
-        
-    // An alias is created for counter attribute, see bellow for an example
+    
+    // This is a function getter
     // The returned value is const, so you cannot edit it
-    global func getCounter : val Integer =
+    export getter counter : val Integer =
         counter
    
-    // An alias is created for the assignment of counter attribute
-    global func setCounter (val newCounter : Integer) : val Integer =
+    // This is a function setter which take only one argument
+    export setter counter (val newCounter : Integer) : val Integer =
         counter = newCounter
-        
+    
+    // You can do some polymorphism
+    export setter counter (val newCounter : test.A) : val Integer =
+        counter = newCounter.counter
+    
     // In all cases this func return counter attribute
-    global func loopCounter (val nbTurn : Integer) : val Integer =
+    export func loopCounter (val nbTurn : Integer) : val Integer =
         if (nbTurn > 0) =
             for (var i : Integer = 0 to nbTurn) =
                 counter = addToCounter(1)
@@ -116,8 +117,7 @@ global type B : A                           // B heriting from A (alias of testA
         }
     
     // We override operator "++"
-    // Operators access are the same as their type
-    operator ++ (val toAdd : Integer) : val Integer =
+    export operator ++ (val toAdd : Integer) : val Integer =
         counter += toAdd
 }
 
@@ -128,8 +128,9 @@ main(val args : String[]) {
     b.addToCounter(3)                       // Cannot do that because addToCounter is not exported
     print(b.loopCounter(5))                 // Should display 5
     b++; print(b.counter)                   // Should display 6
-                                            // Note the uses of "b.counter" which will call "b.getCounter()"
-    // If you let this like that, the returned value will be 1 because print returned true
-    0                                       // which return 0
+                                            // If you let this like that, the returned value will be 1
+                                            // because print returned true Boolean
+                                            
+    0                                       // We decide to return 0 instead
 }
 ```
