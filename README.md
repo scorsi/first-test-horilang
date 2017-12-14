@@ -37,7 +37,7 @@ import {                    // You can import multiple modules
 import horilang.Integer as Integer 
 
 // You can create typealias
-typealias A = testA.A
+typealias testA.A as A
 
 // Private function which edit "left" value because it is a var not a val
 func testFunc1 (var left, val right) : var Integer {
