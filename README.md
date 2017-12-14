@@ -29,10 +29,10 @@ module "test"               // The name of this module, must respect folders hie
 import "horilang.Integer"
 import "testA.A"            // We import A to be used in this file
 
-import (                    // You can import multiple modules
+import {                    // You can import multiple modules
     "testB.B"                 
     "testC.C"
-)
+}
 
 // You can create aliases
 typealias Integer = horilang.Integer
