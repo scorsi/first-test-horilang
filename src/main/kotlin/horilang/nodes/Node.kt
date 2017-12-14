@@ -1,6 +1,6 @@
 package horilang.nodes
 
-import horilang.Token
+import horilang.lexer.Token
 
 abstract class Node {
 

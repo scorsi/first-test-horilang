@@ -1,8 +1,5 @@
 package horilang.lexer
 
-import horilang.Token
-import horilang.TokenType
-
 class Lexer constructor(val input: String, val rules: List<LexerRule>) {
 
     var tokens: MutableList<Token> = mutableListOf()

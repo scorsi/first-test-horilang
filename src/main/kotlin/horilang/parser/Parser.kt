@@ -1,6 +1,6 @@
 package horilang.parser
 
-import horilang.TokenType
+import horilang.lexer.TokenType
 import horilang.nodes.Node
 import horilang.lexer.Lexer
 

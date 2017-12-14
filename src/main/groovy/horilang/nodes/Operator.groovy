@@ -1,8 +1,8 @@
 package horilang.nodes
 
 import groovy.transform.ToString
-import horilang.Token
-import horilang.TokenType
+import horilang.lexer.Token
+import horilang.lexer.TokenType
 import org.jetbrains.annotations.NotNull
 
 @ToString(includeNames = true, includePackage = false, ignoreNulls = true)

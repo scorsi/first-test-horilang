@@ -1,5 +1,6 @@
 package horilang
 
+import horilang.lexer.TokenType
 import horilang.nodes.Block
 import horilang.nodes.Expression
 import horilang.nodes.Operator

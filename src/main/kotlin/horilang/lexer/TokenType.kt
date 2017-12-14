@@ -1,4 +1,4 @@
-package horilang
+package horilang.lexer
 
 enum class TokenType {
     // KEYWORDS
