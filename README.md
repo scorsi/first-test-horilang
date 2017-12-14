@@ -39,7 +39,7 @@ import horilang.Integer as Integer
 // You can create typealias
 typealias testA.A as A
 
-// Private function which edit "left" value because it is a var not a val
+// This function can edit "left" value because it is a var not a val
 func testFunc1 (var left, val right) : var Integer {
     return left += right
 }
