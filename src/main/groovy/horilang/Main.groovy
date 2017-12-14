@@ -1,4 +1,4 @@
-package com.scorsi.horilang
+package horilang
 
 class Main {
 

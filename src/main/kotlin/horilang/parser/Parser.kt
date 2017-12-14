@@ -1,9 +1,8 @@
-package com.scorsi.horilang.parser
+package horilang.parser
 
-import com.scorsi.horilang.TokenType
-import com.scorsi.horilang.ast.Node
-import com.scorsi.horilang.lexer.Lexer
-import kotlin.reflect.full.primaryConstructor
+import horilang.TokenType
+import horilang.nodes.Node
+import horilang.lexer.Lexer
 
 class Parser constructor(val lexer: Lexer, private val info: ParserInfo) {
 

@@ -1,3 +1,3 @@
-package com.scorsi.horilang.lexer
+package horilang.lexer
 
 class LexerUnknownError : Error("Unknown error")

@@ -1,5 +1,5 @@
-package com.scorsi.horilang.parser
+package horilang.parser
 
-import com.scorsi.horilang.TokenType
+import horilang.TokenType
 
 data class ParserRule @JvmOverloads constructor(var token: TokenType? = null, var specialRule: String? = null)

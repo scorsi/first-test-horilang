@@ -1,6 +1,6 @@
-package com.scorsi.horilang.parser
+package horilang.parser
 
-import com.scorsi.horilang.ast.Node
+import horilang.nodes.Node
 
 /**
  * ParserInfo

@@ -1,7 +1,7 @@
-package com.scorsi.horilang.lexer
+package horilang.lexer
 
-import com.scorsi.horilang.Token
-import com.scorsi.horilang.TokenType
+import horilang.Token
+import horilang.TokenType
 
 class Lexer constructor(val input: String, val rules: List<LexerRule>) {
 

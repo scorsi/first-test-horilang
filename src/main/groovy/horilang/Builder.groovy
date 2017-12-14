@@ -1,18 +1,18 @@
-package com.scorsi.horilang
+package horilang
 
-import com.scorsi.horilang.ast.Block
-import com.scorsi.horilang.ast.Expression
-import com.scorsi.horilang.ast.Operator
-import com.scorsi.horilang.ast.Value
-import com.scorsi.horilang.ast.VariableAssignment
-import com.scorsi.horilang.ast.VariableDeclaration
-import com.scorsi.horilang.lexer.Lexer
-import com.scorsi.horilang.lexer.LexerRule
-import com.scorsi.horilang.parser.Parser
-import com.scorsi.horilang.parser.ParserInfo
-import com.scorsi.horilang.parser.ParserRule
-import com.scorsi.horilang.parser.ParserRuleContainer
-import com.scorsi.horilang.parser.ParserRuleTree
+import horilang.nodes.Block
+import horilang.nodes.Expression
+import horilang.nodes.Operator
+import horilang.nodes.Value
+import horilang.nodes.VariableAssignment
+import horilang.nodes.VariableDeclaration
+import horilang.lexer.Lexer
+import horilang.lexer.LexerRule
+import horilang.parser.Parser
+import horilang.parser.ParserInfo
+import horilang.parser.ParserRule
+import horilang.parser.ParserRuleContainer
+import horilang.parser.ParserRuleTree
 import kotlin.Pair
 
 class Builder {
@@ -150,7 +150,6 @@ class Builder {
             addParserRule("LowCalcOperator", Operator, Arrays.asList(
                     new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.SUB))),
                     new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.ADD))),
-                    new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.LOGICAL_NOT))),
                     new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.BINARY_AND))),
                     new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.BINARY_OR))),
                     new ParserRuleTree(new ParserRuleContainer(new ParserRule(token: TokenType.BINARY_XOR))),

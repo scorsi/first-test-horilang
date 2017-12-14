@@ -1,6 +1,6 @@
-package com.scorsi.horilang.parser
+package horilang.parser
 
-import com.scorsi.horilang.Token
+import horilang.Token
 
 class ParserInstructionNotFound constructor(tokens: List<Token>)
     : Error("Instruction not found for theses tokens: ${tokens.joinToString()}")
