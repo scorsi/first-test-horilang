@@ -26,16 +26,17 @@ If you want to use a fresh new full object language where you can decide of the 
 module "test"               // The name of this module, must respect folders hierarchy
 
 // The imports keyword must be after module keyword and before everything else
-import "horilang.Integer"
-import "testA.A"            // We import A to be used in this file
+import test.A               // We import A to be used in this file
 
 import {                    // You can import multiple modules
-    "testB.B"                 
-    "testC.C"
+    test.C
+    test.D
 }
 
-// You can create aliases
-typealias Integer = horilang.Integer
+// You can create import aliases (equivalent to the line below + standard import)
+import horilang.Integer as Integer 
+
+// You can create typealias
 typealias A = testA.A
 
 // Private function which edit "left" value because it is a var not a val
