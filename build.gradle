@@ -58,7 +58,7 @@ jar {
                 "Class-Path" : configurations.compile.collect { it.getName() }.join(' '),
         )
     }
-    from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    //from configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     destinationDir = file("$rootDir/bin")
 }
 
