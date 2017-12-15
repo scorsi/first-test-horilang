@@ -2,21 +2,22 @@ package horilang.nodes
 
 import groovy.transform.ToString
 import horilang.lexer.Token
+import horilang.lexer.TokenType
+import horilang.nodes.Node
 import org.jetbrains.annotations.NotNull
 
 @ToString(includeNames = true, includePackage = false, ignoreNulls = true)
-class Block extends Node {
+class Operator extends Node {
 
-    List<Node> statements
+    TokenType value
 
-    Block(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
+    Operator(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
         super(tokens, nodes)
         build(tokens, nodes)
     }
 
     private build(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
-        statements = nodes.collect()
-        nodes.clear()
+        value = tokens[0].type
     }
 
 }

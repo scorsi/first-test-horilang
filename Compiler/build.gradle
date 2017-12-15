@@ -26,7 +26,6 @@ repositories {
 
 dependencies {
     compile project (':parser')
-    compile project (':parsernodes')
     compile group: 'org.jetbrains.kotlin',
             name: 'kotlin-stdlib-jdk8',
             version: kotlin_version
