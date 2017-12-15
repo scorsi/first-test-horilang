@@ -18,7 +18,7 @@ class ExportDeclaration extends Node {
             symbol = tokens[1].value
         } else {
             statement = nodes.last()
-            nodes = nodes.dropRight(1)
+            nodes.remove(nodes.last())
         }
     }
 

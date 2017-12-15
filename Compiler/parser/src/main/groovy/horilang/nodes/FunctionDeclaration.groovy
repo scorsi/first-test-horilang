@@ -23,7 +23,7 @@ class FunctionDeclaration extends Node {
         if (node == null || !node instanceof Node)
             throw new RuntimeException("Unexpected parameter, wanted [Block, Statement] but got $node")
         block = node
-        nodes = nodes.dropRight(1)
+        nodes.remove(nodes.last())
 
         if (nodes.isEmpty())
             return
@@ -31,7 +31,7 @@ class FunctionDeclaration extends Node {
         if (node == null && !node instanceof FunctionArguments)
             throw new RuntimeException("Unexpected parameter, wanted [Block] but got $node")
         functionArguments = node as FunctionArguments
-        nodes = nodes.dropRight(1)
+        nodes.remove(nodes.last())
     }
 
     List<VariableDeclaration> getArguments() {

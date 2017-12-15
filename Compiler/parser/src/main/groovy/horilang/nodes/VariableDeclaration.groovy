@@ -25,7 +25,7 @@ class VariableDeclaration extends Node {
             if (!node instanceof Value && !node instanceof Expression)
                 throw new RuntimeException("Unexpected parameter, wanted [Expression, Value] but got $node")
             rightValue = node
-            nodes = nodes.dropRight(1)
+            nodes.remove(nodes.last())
         }
         symbol = tokens[1].value
         if (tokens[0].type == TokenType.VAL)

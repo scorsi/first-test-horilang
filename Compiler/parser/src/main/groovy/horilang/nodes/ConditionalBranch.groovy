@@ -24,7 +24,7 @@ class ConditionalBranch extends Node {
         if (node == null || !(node instanceof Node))
             throw new RuntimeException("Unexpected parameter, wanted [Block, Statement] but got $node")
         elseBranch = node
-        nodes = nodes.dropRight(1)
+        nodes.remove(nodes.last())
 
         node = nodes.last()
         if (node == null)
@@ -35,13 +35,13 @@ class ConditionalBranch extends Node {
             elseBranch = null
         } else if (node instanceof Node) {
             thenBranch = node
-            nodes = nodes.dropRight(1)
+            nodes.remove(nodes.last())
             node = nodes.last()
             if (node == null || !node instanceof Expression)
                 throw new RuntimeException("Unexpected parameter, wanted [Condition] but got $node")
             condition = node
         }
-        nodes = nodes.dropRight(1)
+        nodes.remove(nodes.last())
     }
 
 }

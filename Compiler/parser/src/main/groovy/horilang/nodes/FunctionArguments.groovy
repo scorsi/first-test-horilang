@@ -28,14 +28,15 @@ class FunctionArguments extends Node {
         else if (node instanceof VariableDeclaration)
             while (node != null && node instanceof VariableDeclaration) {
                 arguments.addFirst(node as VariableDeclaration)
-                nodes = nodes.dropRight(1)
+                nodes.remove(nodes.last())
                 if (nodes.isEmpty()) node = null
                 else node = nodes.last()
             }
         else
             throw new RuntimeException("Unexpected parameter, wanted [FunctionArguments, VariableDeclaration] but got $node")
 
-        nodes = nodes.dropRight(1)
+        if (node != null)
+            nodes.remove(nodes.last())
     }
 
 }

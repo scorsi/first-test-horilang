@@ -23,7 +23,7 @@ class Expression extends Node {
         if (node == null || !(node instanceof Value || node instanceof Expression))
             throw new RuntimeException("Unexpected parameter, wanted [Expression, Value] but got $node")
         rightValue = node
-        nodes = nodes.dropRight(1)
+        nodes.remove(nodes.last())
 
         if (nodes.isEmpty()) {
             leftValue = rightValue
@@ -34,12 +34,12 @@ class Expression extends Node {
         if (!node instanceof Operator)
             throw new RuntimeException("Unexpected parameter, wanted [Operator] but got $node")
         operator = node
-        nodes = nodes.dropRight(1)
+        nodes.remove(nodes.last())
         node = nodes.last()
         if (!node instanceof Value && !node instanceof Expression)
             throw new RuntimeException("Unexpected parameter, wanted [Expression, Value] but got $node")
         leftValue = node
-        nodes = nodes.dropRight(1)
+        nodes.remove(nodes.last())
     }
 
 }
