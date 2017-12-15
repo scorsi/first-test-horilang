@@ -40,8 +40,8 @@ object Builder {
         this.blockClass = blockClass
     }
 
-    private fun registerParserStatement(statement: String) {
-        statements.add(statement)
+    private fun registerParserStatement(index: Int, statement: String) {
+        statements.add(index, statement)
     }
 
     @JvmStatic
@@ -115,18 +115,6 @@ object Builder {
                     ))
             )
             @Suppress("UNCHECKED_CAST")
-            addParserRule("Value", Value::class.java as Class<Node>, mutableListOf(
-                    MTree(ParserRule(token = TokenType.INTEGER, isEnd = true)),
-                    MTree(ParserRule(token = TokenType.FLOAT, isEnd = true)),
-                    MTree(ParserRule(token = TokenType.STRING, isEnd = true)),
-                    MTree(ParserRule(token = TokenType.SYMBOL, isEnd = true)),
-                    MTree(ParserRule(specialRule = "SignOperator"), mutableListOf(
-                            MTree(ParserRule(token = TokenType.INTEGER, isEnd = true)),
-                            MTree(ParserRule(token = TokenType.FLOAT, isEnd = true)),
-                            MTree(ParserRule(token = TokenType.SYMBOL, isEnd = true))
-                    ))
-            ))
-            @Suppress("UNCHECKED_CAST")
             addParserRule("Expression", Expression::class.java as Class<Node>, mutableListOf(
                     MTree(ParserRule(specialRule = "Value", isEnd = true), mutableListOf(
                             MTree(ParserRule(specialRule = "Operator"), mutableListOf(
@@ -143,6 +131,55 @@ object Builder {
                             ))
                     ))
             ))
+            @Suppress("UNCHECKED_CAST")
+            addParserRule("Value", Value::class.java as Class<Node>, mutableListOf(
+                    MTree(ParserRule(token = TokenType.INTEGER, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.FLOAT, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.STRING, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.SYMBOL, isEnd = true)),
+                    MTree(ParserRule(specialRule = "SignOperator"), mutableListOf(
+                            MTree(ParserRule(token = TokenType.INTEGER, isEnd = true)),
+                            MTree(ParserRule(token = TokenType.FLOAT, isEnd = true)),
+                            MTree(ParserRule(token = TokenType.SYMBOL, isEnd = true))
+                    ))
+            ))
+            @Suppress("UNCHECKED_CAST")
+            addParserRule("ConditionalBranch", ConditionalBranch::class.java as Class<Node>,
+                    MTree(ParserRule(token = TokenType.IF), mutableListOf(
+                            MTree(ParserRule(specialRule = "Expression"), mutableListOf(
+                                    MTree(ParserRule(token = TokenType.RARROW), mutableListOf(
+                                            MTree(ParserRule(specialRule = "Statement", isEnd = true), mutableListOf(
+                                                    MTree(ParserRule(token = TokenType.ELSE), mutableListOf(
+                                                            MTree(ParserRule(token = TokenType.RARROW), mutableListOf(
+                                                                    MTree(ParserRule(specialRule = "Statement", isEnd = true))
+                                                            )),
+                                                            MTree(ParserRule(token = TokenType.LBRACE), mutableListOf(
+                                                                    MTree(ParserRule(specialRule = "Block"), mutableListOf(
+                                                                            MTree(ParserRule(token = TokenType.RBRACE, isEnd = true))
+                                                                    ))
+                                                            ))
+                                                    ))
+                                            ))
+                                    )),
+                                    MTree(ParserRule(token = TokenType.LBRACE), mutableListOf(
+                                            MTree(ParserRule(specialRule = "Block"), mutableListOf(
+                                                    MTree(ParserRule(token = TokenType.RBRACE, isEnd = true), mutableListOf(
+                                                            MTree(ParserRule(token = TokenType.ELSE), mutableListOf(
+                                                                    MTree(ParserRule(token = TokenType.RARROW), mutableListOf(
+                                                                            MTree(ParserRule(specialRule = "Statement", isEnd = true))
+                                                                    )),
+                                                                    MTree(ParserRule(token = TokenType.LBRACE), mutableListOf(
+                                                                            MTree(ParserRule(specialRule = "Block"), mutableListOf(
+                                                                                    MTree(ParserRule(token = TokenType.RBRACE, isEnd = true))
+                                                                            ))
+                                                                    ))
+                                                            ))
+                                                    ))
+                                            ))
+                                    ))
+                            ))
+                    ))
+            )
             @Suppress("UNCHECKED_CAST")
             addParserRule("SignOperator", Operator::class.java as Class<Node>, mutableListOf(
                     MTree(ParserRule(token = TokenType.SUB, isEnd = true)),
@@ -205,14 +242,14 @@ object Builder {
             /**
              * Register Parser Statements and Block
              */
-            registerParserStatement("Assignment")
-            registerParserStatement("Declaration")
-            registerParserStatement("Value")
-            registerParserStatement("Expression")
+            registerParserStatement(0, "Assignment")
+            registerParserStatement(1, "Declaration")
+            registerParserStatement(2, "Value")
+            registerParserStatement(3, "Expression")
+            registerParserStatement(4, "ConditionalBranch")
 
             @Suppress("UNCHECKED_CAST")
             registerParserBlockNode(Block::class.java as Class<Node>)
-
 
             isInitialized = true
         }
