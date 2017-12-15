@@ -3,7 +3,6 @@ package horilang.parser
 import horilang.lexer.TokenType
 import horilang.nodes.Node
 import horilang.lexer.Lexer
-import horilang.lexer.Token
 
 class Parser constructor(val lexer: Lexer, private val info: ParserInfo) {
 

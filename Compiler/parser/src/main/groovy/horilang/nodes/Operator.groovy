@@ -3,7 +3,6 @@ package horilang.nodes
 import groovy.transform.ToString
 import horilang.lexer.Token
 import horilang.lexer.TokenType
-import horilang.nodes.Node
 import org.jetbrains.annotations.NotNull
 
 @ToString(includeNames = true, includePackage = false, ignoreNulls = true)
