@@ -9,11 +9,14 @@ class Block extends Node {
 
     List<Node> statements
 
-    @Override
-    Node build(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
+    Block(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
+        super(tokens, nodes)
+        build(tokens, nodes)
+    }
+
+    private build(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
         statements = nodes.collect()
         nodes.clear()
-        return this
     }
 
 }

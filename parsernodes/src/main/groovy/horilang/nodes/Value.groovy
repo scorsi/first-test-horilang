@@ -11,8 +11,12 @@ class Value extends Node {
     String type
     Node sign = null
 
-    @Override
-    Node build(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
+    Value(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
+        super(tokens, nodes)
+        build(tokens, nodes)
+    }
+
+    private build(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
         if (!nodes.isEmpty()) {
             sign = nodes.last()
             nodes.remove(nodes.lastIndexOf(sign))
@@ -20,7 +24,6 @@ class Value extends Node {
         println(nodes)
         value = tokens[0].value
         type = tokens[0].type.toString().toLowerCase().capitalize()
-        return this
     }
 
 }

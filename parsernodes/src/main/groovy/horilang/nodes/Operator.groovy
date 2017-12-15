@@ -10,10 +10,13 @@ class Operator extends Node {
 
     TokenType value
 
-    @Override
-    Node build(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
+    Operator(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
+        super(tokens, nodes)
+        build(tokens, nodes)
+    }
+
+    private build(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
         value = tokens[0].type
-        return this
     }
 
 }

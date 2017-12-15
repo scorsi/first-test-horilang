@@ -3,6 +3,7 @@ package horilang.parser
 import horilang.lexer.TokenType
 import horilang.nodes.Node
 import horilang.lexer.Lexer
+import horilang.lexer.Token
 
 class Parser constructor(val lexer: Lexer, private val info: ParserInfo) {
 
@@ -21,9 +22,11 @@ class Parser constructor(val lexer: Lexer, private val info: ParserInfo) {
             true -> Pair(null, true)
             false -> when {
                 matchedRule.value.isEnd || matchedRule.children.isEmpty() ->
-                    Pair(classToCreate.getConstructor().newInstance().build(lexer.consume(baseLevel, actualLevel), nodes), true).let {
-                        println("Creating: ${it.first}")
-                        it
+                    lexer.consume(baseLevel, actualLevel).let { tokens ->
+                        Pair(classToCreate.getConstructor(List::class.java, List::class.java).newInstance(tokens, nodes), true).let {
+                            println("Creating: ${it.first}")
+                            it
+                        }
                     }
                 else -> Pair(null, false)
             }
@@ -89,7 +92,7 @@ class Parser constructor(val lexer: Lexer, private val info: ParserInfo) {
                     }.let { Pair(null, false) }
 
     private fun createBlock(statements: MutableList<Node>): Node =
-            info.block.getConstructor().newInstance().build(lexer.tokens, statements)
+            info.block.getConstructor(List::class.java, List::class.java).newInstance(lexer.tokens, statements)
 
     private fun parseBlock(statements: MutableList<Node>, baseLevel: Int, actualLevel: Int): Node =
             when (lexer.isStreamFinished()) {

@@ -2,9 +2,8 @@ package horilang.nodes
 
 import horilang.lexer.Token
 
-abstract class Node {
-
-    abstract fun build(tokens: List<Token>, nodes: MutableList<Node>): Node
+@Suppress("UNUSED_PARAMETER")
+abstract class Node constructor(val tokens: List<Token>, nodes: MutableList<Node>) {
 
     // abstract fun compute(): Object
 

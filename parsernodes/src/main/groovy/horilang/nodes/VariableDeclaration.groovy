@@ -10,8 +10,12 @@ class VariableDeclaration extends Node {
     String symbol
     Node rightValue = null
 
-    @Override
-    Node build(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
+    VariableDeclaration(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
+        super(tokens, nodes)
+        build(tokens, nodes)
+    }
+
+    private build(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
         if (!nodes.isEmpty()) {
             def node = nodes.last()
             if (!node instanceof Value && !node instanceof Expression)
@@ -20,7 +24,6 @@ class VariableDeclaration extends Node {
             nodes.remove(nodes.lastIndexOf(node))
         }
         symbol = tokens[1].value
-        return this
     }
 
 }

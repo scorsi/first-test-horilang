@@ -11,8 +11,12 @@ class ConditionalBranch extends Node {
     Node thenBranch
     Node elseBranch
 
-    @Override
-    Node build(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
+    ConditionalBranch(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
+        super(tokens, nodes)
+        build(tokens, nodes)
+    }
+
+    private build(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
         def node = nodes.last()
         if (node == null || !(node instanceof Node))
             throw new RuntimeException("Unexpected parameter, wanted [Block, Statement] but got $node")
@@ -35,8 +39,6 @@ class ConditionalBranch extends Node {
             condition = node
         }
         nodes.remove(nodes.lastIndexOf(node))
-
-        return this
     }
 
 }

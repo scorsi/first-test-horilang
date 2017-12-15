@@ -11,8 +11,12 @@ class Expression extends Node {
     Node operator = null
     Node rightValue = null
 
-    @Override
-    Node build(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
+    Expression(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
+        super(tokens, nodes)
+        build(tokens, nodes)
+    }
+
+    private build(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
         def node = nodes.last()
         if (node == null || !(node instanceof Value || node instanceof Expression))
             throw new RuntimeException("Unexpected parameter, wanted [Expression, Value] but got $node")
@@ -34,7 +38,6 @@ class Expression extends Node {
             throw new RuntimeException("Unexpected parameter, wanted [Expression, Value] but got $node")
         leftValue = node
         nodes.remove(nodes.lastIndexOf(node))
-        return this
     }
 
 }
