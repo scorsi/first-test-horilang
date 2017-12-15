@@ -22,7 +22,7 @@ class VariableAssignment extends Node {
         if (node != null && !node instanceof Value && !node instanceof Expression)
             throw new RuntimeException("Unexpected parameter, wanted [Expression, Value] but got $node")
         rightValue = node
-        nodes.remove(nodes.lastIndexOf(node))
+        nodes = nodes.dropRight(1)
         leftValue = tokens[0].value
     }
 
