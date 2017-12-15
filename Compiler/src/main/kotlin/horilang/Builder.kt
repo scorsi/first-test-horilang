@@ -55,7 +55,7 @@ object Builder {
             addLexerRule(LexerRule(TokenType.ELSE, """else"""))
             addLexerRule(LexerRule(TokenType.FLOAT, """([0-9]+\.[0-9]*)|([0-9]*\.[0-9]+)"""))
             addLexerRule(LexerRule(TokenType.INTEGER, """[0-9]+"""))
-            addLexerRule(LexerRule(TokenType.SYMBOL, """[a-z]+"""))
+            addLexerRule(LexerRule(TokenType.SYMBOL, """[a-z][a-zA-Z]*"""))
             addLexerRule(LexerRule(TokenType.STRING, """\".*\""""))
             addLexerRule(LexerRule(TokenType.DOT, """\."""))
             addLexerRule(LexerRule(TokenType.LPAREN, """\("""))
