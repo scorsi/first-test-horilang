@@ -93,8 +93,8 @@ object Builder {
                     MTree(ParserRule(token = TokenType.VAR), mutableListOf(
                             MTree(ParserRule(token = TokenType.SYMBOL, isEnd = true), mutableListOf( // VAR SYMBOL
                                     MTree(ParserRule(token = TokenType.ASSIGN), mutableListOf(
-                                            MTree(ParserRule(specialRule = "Expression")),
-                                            MTree(ParserRule(specialRule = "Value"))
+                                            MTree(ParserRule(specialRule = "Expression", isEnd = true)),
+                                            MTree(ParserRule(specialRule = "Value", isEnd = true))
                                     ))
                             ))
                     ))
@@ -103,35 +103,35 @@ object Builder {
             addParserRule("Assignment", VariableAssignment::class.java as Class<Node>,
                     MTree(ParserRule(token = TokenType.SYMBOL), mutableListOf(
                             MTree(ParserRule(token = TokenType.ASSIGN), mutableListOf(
-                                    MTree(ParserRule(specialRule = "Expression")),
-                                    MTree(ParserRule(specialRule = "Value"))
+                                    MTree(ParserRule(specialRule = "Expression", isEnd = true)),
+                                    MTree(ParserRule(specialRule = "Value", isEnd = true))
                             ))
                     ))
             )
             @Suppress("UNCHECKED_CAST")
             addParserRule("Value", Value::class.java as Class<Node>, mutableListOf(
-                    MTree(ParserRule(token = TokenType.INTEGER)),
-                    MTree(ParserRule(token = TokenType.FLOAT)),
-                    MTree(ParserRule(token = TokenType.STRING)),
-                    MTree(ParserRule(token = TokenType.SYMBOL)),
+                    MTree(ParserRule(token = TokenType.INTEGER, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.FLOAT, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.STRING, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.SYMBOL, isEnd = true)),
                     MTree(ParserRule(specialRule = "SignOperator"), mutableListOf(
-                            MTree(ParserRule(token = TokenType.INTEGER)),
-                            MTree(ParserRule(token = TokenType.FLOAT)),
-                            MTree(ParserRule(token = TokenType.SYMBOL))
+                            MTree(ParserRule(token = TokenType.INTEGER, isEnd = true)),
+                            MTree(ParserRule(token = TokenType.FLOAT, isEnd = true)),
+                            MTree(ParserRule(token = TokenType.SYMBOL, isEnd = true))
                     ))
             ))
             @Suppress("UNCHECKED_CAST")
             addParserRule("Expression", Expression::class.java as Class<Node>, mutableListOf(
                     MTree(ParserRule(specialRule = "Value", isEnd = true), mutableListOf(
                             MTree(ParserRule(specialRule = "Operator"), mutableListOf(
-                                    MTree(ParserRule(specialRule = "Expression"))
+                                    MTree(ParserRule(specialRule = "Expression", isEnd = true))
                             ))
                     )),
                     MTree(ParserRule(token = TokenType.LPAREN), mutableListOf(
                             MTree(ParserRule(specialRule = "Expression"), mutableListOf(
                                     MTree(ParserRule(token = TokenType.RPAREN, isEnd = true), mutableListOf(
                                             MTree(ParserRule(specialRule = "Operator"), mutableListOf(
-                                                    MTree(ParserRule(specialRule = "Expression"))
+                                                    MTree(ParserRule(specialRule = "Expression", isEnd = true))
                                             ))
                                     ))
                             ))
@@ -139,61 +139,61 @@ object Builder {
             ))
             @Suppress("UNCHECKED_CAST")
             addParserRule("SignOperator", Operator::class.java as Class<Node>, mutableListOf(
-                    MTree(ParserRule(token = TokenType.SUB)),
-                    MTree(ParserRule(token = TokenType.ADD))
+                    MTree(ParserRule(token = TokenType.SUB, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.ADD, isEnd = true))
             ))
             @Suppress("UNCHECKED_CAST")
             addParserRule("ConditionOperator", Operator::class.java as Class<Node>, mutableListOf(
-                    MTree(ParserRule(token = TokenType.EQUAL)),
-                    MTree(ParserRule(token = TokenType.GREATER)),
-                    MTree(ParserRule(token = TokenType.LOWER)),
-                    MTree(ParserRule(token = TokenType.GREATER_EQUAL)),
-                    MTree(ParserRule(token = TokenType.LOWER_EQUAL))
+                    MTree(ParserRule(token = TokenType.EQUAL, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.GREATER, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.LOWER, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.GREATER_EQUAL, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.LOWER_EQUAL, isEnd = true))
             ))
             @Suppress("UNCHECKED_CAST")
             addParserRule("LowCalcOperator", Operator::class.java as Class<Node>, mutableListOf(
-                    MTree(ParserRule(token = TokenType.SUB)),
-                    MTree(ParserRule(token = TokenType.ADD)),
-                    MTree(ParserRule(token = TokenType.BINARY_AND)),
-                    MTree(ParserRule(token = TokenType.BINARY_OR)),
-                    MTree(ParserRule(token = TokenType.BINARY_XOR)),
-                    MTree(ParserRule(token = TokenType.BINARY_NOT)),
-                    MTree(ParserRule(token = TokenType.BINARY_LEFT_SHIFT)),
-                    MTree(ParserRule(token = TokenType.BINARY_RIGHT_SHIFT))
+                    MTree(ParserRule(token = TokenType.SUB, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.ADD, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.BINARY_AND, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.BINARY_OR, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.BINARY_XOR, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.BINARY_NOT, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.BINARY_LEFT_SHIFT, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.BINARY_RIGHT_SHIFT, isEnd = true))
             ))
             @Suppress("UNCHECKED_CAST")
             addParserRule("HighCalcOperator", Operator::class.java as Class<Node>, mutableListOf(
-                    MTree(ParserRule(token = TokenType.MUL)),
-                    MTree(ParserRule(token = TokenType.DIV)),
-                    MTree(ParserRule(token = TokenType.MOD))
+                    MTree(ParserRule(token = TokenType.MUL, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.DIV, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.MOD, isEnd = true))
             ))
             @Suppress("UNCHECKED_CAST")
             addParserRule("LogicalOperator", Operator::class.java as Class<Node>, mutableListOf(
-                    MTree(ParserRule(token = TokenType.LOGICAL_NOT)),
-                    MTree(ParserRule(token = TokenType.LOGICAL_AND)),
-                    MTree(ParserRule(token = TokenType.LOGICAL_OR))
+                    MTree(ParserRule(token = TokenType.LOGICAL_NOT, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.LOGICAL_AND, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.LOGICAL_OR, isEnd = true))
             ))
             @Suppress("UNCHECKED_CAST")
             addParserRule("Operator", Operator::class.java as Class<Node>, mutableListOf(
-                    MTree(ParserRule(token = TokenType.EQUAL)),
-                    MTree(ParserRule(token = TokenType.GREATER)),
-                    MTree(ParserRule(token = TokenType.LOWER)),
-                    MTree(ParserRule(token = TokenType.GREATER_EQUAL)),
-                    MTree(ParserRule(token = TokenType.LOWER_EQUAL)),
-                    MTree(ParserRule(token = TokenType.SUB)),
-                    MTree(ParserRule(token = TokenType.ADD)),
-                    MTree(ParserRule(token = TokenType.MUL)),
-                    MTree(ParserRule(token = TokenType.DIV)),
-                    MTree(ParserRule(token = TokenType.MOD)),
-                    MTree(ParserRule(token = TokenType.BINARY_AND)),
-                    MTree(ParserRule(token = TokenType.BINARY_OR)),
-                    MTree(ParserRule(token = TokenType.BINARY_XOR)),
-                    MTree(ParserRule(token = TokenType.BINARY_NOT)),
-                    MTree(ParserRule(token = TokenType.BINARY_LEFT_SHIFT)),
-                    MTree(ParserRule(token = TokenType.BINARY_RIGHT_SHIFT)),
-                    MTree(ParserRule(token = TokenType.LOGICAL_NOT)),
-                    MTree(ParserRule(token = TokenType.LOGICAL_AND)),
-                    MTree(ParserRule(token = TokenType.LOGICAL_OR))
+                    MTree(ParserRule(token = TokenType.EQUAL, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.GREATER, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.LOWER, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.GREATER_EQUAL, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.LOWER_EQUAL, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.SUB, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.ADD, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.MUL, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.DIV, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.MOD, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.BINARY_AND, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.BINARY_OR, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.BINARY_XOR, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.BINARY_NOT, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.BINARY_LEFT_SHIFT, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.BINARY_RIGHT_SHIFT, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.LOGICAL_NOT, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.LOGICAL_AND, isEnd = true)),
+                    MTree(ParserRule(token = TokenType.LOGICAL_OR, isEnd = true))
             ))
 
             /**
