@@ -1,10 +1,12 @@
 package horilang.nodes
 
+import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import horilang.lexer.Token
 import org.jetbrains.annotations.NotNull
 
 @ToString(includeNames = true, includePackage = false, ignoreNulls = true)
+@EqualsAndHashCode
 class VariableDeclaration extends Node {
 
     String symbol
