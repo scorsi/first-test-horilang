@@ -3,6 +3,7 @@ package horilang.nodes
 import groovy.transform.EqualsAndHashCode
 import groovy.transform.ToString
 import horilang.lexer.Token
+import horilang.lexer.TokenType
 import org.jetbrains.annotations.NotNull
 
 @ToString(includeNames = true, includePackage = false, ignoreNulls = true)
@@ -10,6 +11,7 @@ import org.jetbrains.annotations.NotNull
 class VariableDeclaration extends Node {
 
     String symbol
+    Boolean isConst = false
     Node rightValue = null
 
     VariableDeclaration(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
@@ -26,6 +28,8 @@ class VariableDeclaration extends Node {
             nodes.remove(nodes.lastIndexOf(node))
         }
         symbol = tokens[1].value
+        if (tokens[0].type == TokenType.VAL)
+            isConst = true
     }
 
 }

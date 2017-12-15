@@ -3,6 +3,7 @@ package horilang.lexer
 enum class TokenType {
     // KEYWORDS
     VAR,                    // VARIABLE DECLARATION
+    VAL,                    // VALUE DECLARATION
     FUN,                    // FUNCTION DECLARATION
     IF,                     // IF
     ELSE,                   // ELSE

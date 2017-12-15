@@ -51,6 +51,7 @@ object Builder {
              * Create all the Lexer Rules
              */
             addLexerRule(LexerRule(TokenType.VAR, """var"""))
+            addLexerRule(LexerRule(TokenType.VAL, """val"""))
             addLexerRule(LexerRule(TokenType.IF, """if"""))
             addLexerRule(LexerRule(TokenType.ELSE, """else"""))
             addLexerRule(LexerRule(TokenType.FLOAT, """(\+|\-)?(([0-9]+\.[0-9]*)|([0-9]*\.[0-9]+))"""))
@@ -95,7 +96,7 @@ object Builder {
              * Create all the Parser Rules
              */
             @Suppress("UNCHECKED_CAST")
-            addParserRule("Declaration", VariableDeclaration::class.java as Class<Node>,
+            addParserRule("Declaration", VariableDeclaration::class.java as Class<Node>, mutableListOf(
                     MTree(ParserRule(token = TokenType.VAR), mutableListOf(
                             MTree(ParserRule(token = TokenType.SYMBOL, isEnd = true), mutableListOf( // VAR SYMBOL
                                     MTree(ParserRule(token = TokenType.ASSIGN), mutableListOf(
@@ -103,8 +104,16 @@ object Builder {
                                             MTree(ParserRule(specialRule = "Value", isEnd = true))
                                     ))
                             ))
+                    )),
+                    MTree(ParserRule(token = TokenType.VAL), mutableListOf(
+                            MTree(ParserRule(token = TokenType.SYMBOL, isEnd = true), mutableListOf( // VAR SYMBOL
+                                    MTree(ParserRule(token = TokenType.ASSIGN), mutableListOf(
+                                            MTree(ParserRule(specialRule = "Expression", isEnd = true)),
+                                            MTree(ParserRule(specialRule = "Value", isEnd = true))
+                                    ))
+                            ))
                     ))
-            )
+            ))
             @Suppress("UNCHECKED_CAST")
             addParserRule("Assignment", VariableAssignment::class.java as Class<Node>,
                     MTree(ParserRule(token = TokenType.SYMBOL), mutableListOf(
