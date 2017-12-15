@@ -73,7 +73,6 @@ public class NodesTest {
         Value node = createIntegerValue();
         assert node.getValue().equals(INTEGER_VALUE);
         assert node.getType().equals("Integer");
-        assert node.getSign() == null;
     }
 
     @Test

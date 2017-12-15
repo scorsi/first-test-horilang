@@ -11,7 +11,6 @@ class Value extends Node {
 
     String value
     String type
-    Node sign = null
 
     Value(@NotNull List<Token> tokens, @NotNull List<horilang.nodes.Node> nodes) {
         super(tokens, nodes)
@@ -19,10 +18,6 @@ class Value extends Node {
     }
 
     private build(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
-        if (!nodes.isEmpty()) {
-            sign = nodes.last()
-            nodes.remove(nodes.lastIndexOf(sign))
-        }
         value = tokens[0].value
         type = tokens[0].type.toString().toLowerCase().capitalize()
     }
