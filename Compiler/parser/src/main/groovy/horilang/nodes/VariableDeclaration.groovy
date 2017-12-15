@@ -20,7 +20,7 @@ class VariableDeclaration extends Node {
     }
 
     private build(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
-        if (!nodes.isEmpty()) {
+        if (!nodes.isEmpty() && tokens.size() > 2 && tokens[2].type == TokenType.ASSIGN) {
             def node = nodes.last()
             if (!node instanceof Value && !node instanceof Expression)
                 throw new RuntimeException("Unexpected parameter, wanted [Expression, Value] but got $node")
