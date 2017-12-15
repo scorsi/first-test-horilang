@@ -40,8 +40,8 @@ object Builder {
         this.blockClass = blockClass
     }
 
-    private fun registerParserStatement(index: Int, statement: String) {
-        statements.add(index, statement)
+    private fun registerParserStatement(statement: String) {
+        statements.add(statement)
     }
 
     @JvmStatic
@@ -55,9 +55,13 @@ object Builder {
             addLexerRule(LexerRule(TokenType.FUN, """fun"""))
             addLexerRule(LexerRule(TokenType.IF, """if"""))
             addLexerRule(LexerRule(TokenType.ELSE, """else"""))
+            addLexerRule(LexerRule(TokenType.MODULE, """module"""))
+            addLexerRule(LexerRule(TokenType.EXPORT, """export"""))
+            addLexerRule(LexerRule(TokenType.IMPORT, """import"""))
             addLexerRule(LexerRule(TokenType.FLOAT, """(\+|\-)?(([0-9]+\.[0-9]*)|([0-9]*\.[0-9]+))"""))
             addLexerRule(LexerRule(TokenType.INTEGER, """(\+|\-)?([0-9]+)"""))
             addLexerRule(LexerRule(TokenType.SYMBOL, """[a-z][a-zA-Z]*"""))
+            addLexerRule(LexerRule(TokenType.BIG_SYMBOL, """[a-z][a-zA-Z]*(\.([a-z][a-zA-Z]*)?)*"""))
             addLexerRule(LexerRule(TokenType.STRING, """\".*\""""))
             addLexerRule(LexerRule(TokenType.DOT, """\."""))
             addLexerRule(LexerRule(TokenType.LPAREN, """\("""))
@@ -97,6 +101,22 @@ object Builder {
             /**
              * Create all the Parser Rules
              */
+            @Suppress("UNCHECKED_CAST")
+            addParserRule("ModuleDeclaration", ModuleDeclaration::class.java as Class<Node>,
+                    MTree(ParserRule(token = TokenType.MODULE), mutableListOf(
+                            MTree(ParserRule(token = TokenType.SYMBOL, isEnd = true)),
+                            MTree(ParserRule(token = TokenType.BIG_SYMBOL, isEnd = true))
+                    ))
+            )
+            @Suppress("UNCHECKED_CAST")
+            addParserRule("ExportDeclaration", ExportDeclaration::class.java as Class<Node>,
+                    MTree(ParserRule(token = TokenType.EXPORT), mutableListOf(
+                            MTree(ParserRule(token = TokenType.SYMBOL, isEnd = true)),
+                            MTree(ParserRule(token = TokenType.BIG_SYMBOL, isEnd = true)),
+                            MTree(ParserRule(specialRule = "VariableDeclaration", isEnd = true)),
+                            MTree(ParserRule(specialRule = "FunctionDeclaration", isEnd = true))
+                    ))
+            )
             @Suppress("UNCHECKED_CAST")
             addParserRule("VariableDeclaration", VariableDeclaration::class.java as Class<Node>, mutableListOf(
                     MTree(ParserRule(token = TokenType.VAR), mutableListOf(
@@ -300,12 +320,13 @@ object Builder {
             /**
              * Register Parser Statements and Block
              */
-            registerParserStatement(0, "VariableAssignment")
-            registerParserStatement(1, "VariableDeclaration")
-            registerParserStatement(2, "Value")
-            registerParserStatement(3, "Expression")
-            registerParserStatement(4, "ConditionalBranch")
-            registerParserStatement(5, "FunctionDeclaration")
+            registerParserStatement("ModuleDeclaration")
+            registerParserStatement("FunctionDeclaration")
+            registerParserStatement("VariableDeclaration")
+            registerParserStatement("VariableAssignment")
+            registerParserStatement("ExportDeclaration")
+            registerParserStatement("Expression")
+            registerParserStatement("ConditionalBranch")
 
             @Suppress("UNCHECKED_CAST")
             registerParserBlockNode(Block::class.java as Class<Node>)

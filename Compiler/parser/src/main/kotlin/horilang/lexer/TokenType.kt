@@ -8,6 +8,10 @@ enum class TokenType {
     IF,                     // IF
     ELSE,                   // ELSE
 
+    MODULE,                 // MODULE
+    IMPORT,                 // IMPORT
+    EXPORT,                 // EXPORT
+
     // VALUES
     INTEGER,                // NUMBER
     FLOAT,                  // DECIMAL
@@ -15,6 +19,7 @@ enum class TokenType {
 
     // USER-KEYWORD
     SYMBOL,                 // VARIABLE OR FUNCTION NAME
+    BIG_SYMBOL,             // MODULE NAME OR METHOD/ATTRIBUTE
 
     // REGISTERED CHARACTERS
     DOT,                    // "."
