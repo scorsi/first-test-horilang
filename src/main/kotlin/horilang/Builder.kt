@@ -16,7 +16,7 @@ object Builder {
     private var lexerRules: MutableList<LexerRule> = mutableListOf()
     private var parserRules: MutableMap<String, Pair<Class<Node>, MutableList<ParserRuleTree<ParserRuleContainer>>>> = mutableMapOf()
     private var statements: MutableList<String> = mutableListOf()
-    lateinit var blockClass: Class<Node>
+    private lateinit var blockClass: Class<Node>
     private var isInitialized: Boolean = false
 
     private fun addLexerRule(rule: LexerRule) {
