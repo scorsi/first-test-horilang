@@ -22,7 +22,13 @@ enum class TokenType {
     RPAREN,                 // ")"
     LBRACE,                 // "{"
     RBRACE,                 // "}"
+    LBRACK,                 // "["
+    RBRACK,                 // "]"
+    LCHEV,                  // "<"
+    RCHEV,                  // ">"
     COMMA,                  // ","
+    LARROW,                 // "<-"
+    RARROW,                 // "->"
 
     // ACTIONS
     ASSIGN,                 // ASSIGNMENT
