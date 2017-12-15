@@ -14,6 +14,7 @@ class ExportDeclaration extends Node {
 
     ExportDeclaration(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
         super(tokens, nodes)
+
         if (nodes.isEmpty()) {
             symbol = tokens[1].value
         } else {

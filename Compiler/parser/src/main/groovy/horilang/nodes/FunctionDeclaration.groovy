@@ -45,4 +45,5 @@ class FunctionDeclaration extends Node {
         else
             return "FunctionDeclaration(symbol:$symbol, arguments:$arguments, block:$block)"
     }
+
 }

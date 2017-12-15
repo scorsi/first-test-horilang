@@ -14,10 +14,7 @@ class Operator extends Node {
 
     Operator(@NotNull List<Token> tokens, @NotNull List<horilang.nodes.Node> nodes) {
         super(tokens, nodes)
-        build(tokens, nodes)
-    }
 
-    private build(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
         value = tokens[0].type
     }
 

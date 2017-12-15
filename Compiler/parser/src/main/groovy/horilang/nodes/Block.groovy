@@ -13,10 +13,6 @@ class Block extends Node {
 
     Block(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
         super(tokens, nodes)
-        build(tokens, nodes)
-    }
-
-    private build(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
         statements = nodes.collect()
         nodes.clear()
     }

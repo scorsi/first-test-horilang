@@ -13,6 +13,7 @@ class ImportDeclaration extends Node{
 
     ImportDeclaration(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
         super(tokens, nodes)
+
         symbol = tokens[1]
     }
 

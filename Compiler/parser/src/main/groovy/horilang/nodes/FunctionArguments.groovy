@@ -17,8 +17,6 @@ class FunctionArguments extends Node {
     }
 
     private build(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
-        println(nodes)
-
         def node = nodes.last()
         if (node == null)
             throw new RuntimeException("Unexpected parameter, wanted [FunctionArguments, VariableDeclaration] but got $node")

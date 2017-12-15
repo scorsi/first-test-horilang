@@ -13,6 +13,7 @@ class ModuleDeclaration extends Node {
 
     ModuleDeclaration(@NotNull List<Token> tokens, @NotNull List<Node> nodes) {
         super(tokens, nodes)
+
         name = tokens[1].value
     }
 
