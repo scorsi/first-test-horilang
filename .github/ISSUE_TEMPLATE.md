@@ -4,4 +4,4 @@
 
 ### Steps to reproduce the behaviour
 
-### Stack trace (if present)
+### Stack trace or Exception message (if present)
