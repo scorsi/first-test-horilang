@@ -10,7 +10,7 @@ import horilang.nodes.Node
  * block: the class which represents a block of statements
  */
 class ParserInfo constructor(
-        val rules: Map<String, Pair<Class<Node>, ArrayList<ParserRuleTree<ParserRuleContainer>>>>,
+        val rules: Map<String, Pair<Class<Node>, ArrayList<MTree<ParserRule>>>>,
         val statements: List<String>,
         val block: Class<Node>
 )

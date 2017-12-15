@@ -6,7 +6,7 @@ import horilang.lexer.Lexer
 
 class Parser constructor(val lexer: Lexer, private val info: ParserInfo) {
 
-    private fun parseTreeNext(classToCreate: Class<Node>, matchedRule: ParserRuleTree<ParserRuleContainer>, baseLevel: Int, actualLevel: Int, nodes: MutableList<Node>): Pair<Node?, Boolean> {
+    private fun parseTreeNext(classToCreate: Class<Node>, matchedRule: MTree<ParserRule>, baseLevel: Int, actualLevel: Int, nodes: MutableList<Node>): Pair<Node?, Boolean> {
         var match = false
         matchedRule.children
                 .forEach { rule ->
@@ -30,19 +30,19 @@ class Parser constructor(val lexer: Lexer, private val info: ParserInfo) {
         }
     }
 
-    private fun parseTreeToken(classToCreate: Class<Node>, matchedRule: ParserRuleTree<ParserRuleContainer>, baseLevel: Int, actualLevel: Int, nodes: MutableList<Node>): Pair<Node?, Boolean> =
+    private fun parseTreeToken(classToCreate: Class<Node>, matchedRule: MTree<ParserRule>, baseLevel: Int, actualLevel: Int, nodes: MutableList<Node>): Pair<Node?, Boolean> =
             lexer.peek(actualLevel).let { actualToken ->
                 when (actualToken) {
                     null -> Pair(null, false)
                     else -> when {
-                        actualToken.type == matchedRule.value.rule.token -> parseTreeNext(classToCreate, matchedRule, baseLevel, actualLevel, nodes)
+                        actualToken.type == matchedRule.value.token -> parseTreeNext(classToCreate, matchedRule, baseLevel, actualLevel, nodes)
                         else -> Pair(null, false)
                     }
                 }
             }
 
-    private fun parseTreeSpecialRule(classToCreate: Class<Node>, matchedRule: ParserRuleTree<ParserRuleContainer>, baseLevel: Int, actualLevel: Int, nodes: MutableList<Node>): Pair<Node?, Boolean> =
-            info.rules.filter { it.key == matchedRule.value.rule.specialRule }
+    private fun parseTreeSpecialRule(classToCreate: Class<Node>, matchedRule: MTree<ParserRule>, baseLevel: Int, actualLevel: Int, nodes: MutableList<Node>): Pair<Node?, Boolean> =
+            info.rules.filter { it.key == matchedRule.value.specialRule }
                     .forEach { rule ->
                         rule.value.second.forEach { ruleToTest ->
                             parseTree(rule.value.first, ruleToTest, actualLevel - 1, actualLevel, nodes).let {
@@ -54,9 +54,9 @@ class Parser constructor(val lexer: Lexer, private val info: ParserInfo) {
                         }
                     }.let { Pair(null, false) }
 
-    private fun parseTree(classToCreate: Class<Node>, matchedRule: ParserRuleTree<ParserRuleContainer>, baseLevel: Int, actualLevel: Int, nodes: MutableList<Node>): Pair<Node?, Boolean> =
-            when (matchedRule.value.rule.token) {
-                null -> when (matchedRule.value.rule.specialRule) {
+    private fun parseTree(classToCreate: Class<Node>, matchedRule: MTree<ParserRule>, baseLevel: Int, actualLevel: Int, nodes: MutableList<Node>): Pair<Node?, Boolean> =
+            when (matchedRule.value.token) {
+                null -> when (matchedRule.value.specialRule) {
                     null -> throw Error()
                     "Block" -> parseBlock(mutableListOf(), actualLevel - 1, actualLevel).let {
                         nodes.add(it)
