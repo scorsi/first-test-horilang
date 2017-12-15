@@ -63,6 +63,11 @@ public class NodesTest {
         return new Operator(tokens, nodes);
     }
 
+    private Operator createSubOperator() {
+        tokens.add(new Token(TokenType.SUB, "-"));
+        return new Operator(tokens, nodes);
+    }
+
     @Test
     public void integerValue() {
         Value node = createIntegerValue();
@@ -103,6 +108,12 @@ public class NodesTest {
     public void addOperator() {
         Operator node = createAddOperator();
         assert node.getValue().equals(TokenType.ADD);
+    }
+
+    @Test
+    public void subOperator() {
+        Operator node = createSubOperator();
+        assert node.getValue().equals(TokenType.SUB);
     }
 
 }
