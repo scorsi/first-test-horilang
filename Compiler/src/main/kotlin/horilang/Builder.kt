@@ -109,6 +109,13 @@ object Builder {
                     ))
             )
             @Suppress("UNCHECKED_CAST")
+            addParserRule("ImportDeclaration", ImportDeclaration::class.java as Class<Node>,
+                    MTree(ParserRule(token = TokenType.IMPORT), mutableListOf(
+                            MTree(ParserRule(token = TokenType.SYMBOL, isEnd = true)),
+                            MTree(ParserRule(token = TokenType.BIG_SYMBOL, isEnd = true))
+                    ))
+            )
+            @Suppress("UNCHECKED_CAST")
             addParserRule("ExportDeclaration", ExportDeclaration::class.java as Class<Node>,
                     MTree(ParserRule(token = TokenType.EXPORT), mutableListOf(
                             MTree(ParserRule(token = TokenType.SYMBOL, isEnd = true)),
@@ -325,6 +332,7 @@ object Builder {
             registerParserStatement("VariableDeclaration")
             registerParserStatement("VariableAssignment")
             registerParserStatement("ExportDeclaration")
+            registerParserStatement("ImportDeclaration")
             registerParserStatement("Expression")
             registerParserStatement("ConditionalBranch")
 
